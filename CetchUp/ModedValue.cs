@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CetchUp.EquationElements;
 
@@ -48,6 +49,37 @@ namespace CetchUp
                 }
                 line = line.Substring(nextSymbolIndex + 1);
             }
+        }
+
+        public CalculateValue(CetchUpObject cetchUpObject)
+        {
+            currentValue = GetValueFromValueElement(equation[0]);
+
+            EEmodifier lastMod;
+            for (int i = 1; i < equation.Count; i++)
+            {
+                if (equation[i] is EEmodifier)
+                {
+                    lastMod = (EEmodifier)equation[i];
+                }
+                if (equation[i] is EEconstant || equation[i] is EEvariable)
+                {
+                    switch (lastMod.modtype)
+                    {
+                        case EEmodifier.ModifierType.Add: currentValue += GetValueFromValueElement(equation[i]); break;
+                        case EEmodifier.ModifierType.Subtract: currentValue -= GetValueFromValueElement(equation[i]); break;
+                        case EEmodifier.ModifierType.Multiply: currentValue *= GetValueFromValueElement(equation[i]); break;
+                        case EEmodifier.ModifierType.Divide: currentValue /= GetValueFromValueElement(equation[i]); break;
+                    }
+                }
+            }
+        }
+
+        private float GetValueFromValueElement(IEquationElement element)
+        {
+            if (element is EEconstant) { return ((EEconstant)equation[0]).constantValue; }
+            if (element is EEvariable) { return cetchUpObject.GetValue(((EEvariable)equation[0]).variableName); }
+            throw new ArgumentException("Expected a value");
         }
     }
 }
