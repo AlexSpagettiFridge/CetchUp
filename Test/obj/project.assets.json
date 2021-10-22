@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {}
+    "net5.0": {
+      "CetchUp/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/CetchUp.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CetchUp.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "CetchUp/1.0.0": {
+      "type": "project",
+      "path": "../CetchUp/CetchUp.csproj",
+      "msbuildProject": "../CetchUp/CetchUp.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net5.0": []
+    "net5.0": [
+      "CetchUp >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\PC\\.nuget\\packages\\": {},
@@ -41,7 +60,11 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\PC\\Dropbox\\Projekte\\prototypes\\CetchUp\\CetchUp\\CetchUp.csproj": {
+              "projectPath": "C:\\Users\\PC\\Dropbox\\Projekte\\prototypes\\CetchUp\\CetchUp\\CetchUp.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

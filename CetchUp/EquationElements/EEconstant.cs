@@ -1,6 +1,6 @@
 namespace CetchUp.EquationElements
 {
-    internal struct EEconstant
+    internal struct EEconstant : IEquationElement
     {
         public readonly float constantValue;
 

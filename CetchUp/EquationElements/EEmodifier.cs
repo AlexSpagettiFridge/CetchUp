@@ -1,6 +1,6 @@
 namespace CetchUp.EquationElements
 {
-    internal struct EEmodifier
+    internal struct EEmodifier : IEquationElement
     {
         public readonly ModifierType modtype;
 
@@ -11,10 +11,10 @@ namespace CetchUp.EquationElements
 
         public EEmodifier(char symbol){
             switch(symbol){
-                case '+': modtype = ModifierType.Add;
-                case '-': modtype = ModifierType.Subtract;
-                case '*': modtype = ModifierType.Multiply;
-                case '/': modtype = ModifierType.Divide;
+                case '-': modtype = ModifierType.Subtract; break;
+                case '*': modtype = ModifierType.Multiply; break;
+                case '/': modtype = ModifierType.Divide; break;
+                default : modtype = ModifierType.Add; break;
             }
         }
 

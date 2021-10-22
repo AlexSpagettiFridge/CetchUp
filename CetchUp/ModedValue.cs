@@ -29,12 +29,12 @@ namespace CetchUp
             {
                 line.Replace(" ", "");
             }
-            int equalSymbolIndex = line.IndexOfAny('=', '%');
+            int equalSymbolIndex = line.IndexOfAny(new char[] { '=', '%' });
             if (line.ToCharArray()[equalSymbolIndex] == '%')
             {
                 isMultiplier = true;
             }
-            modifiedValue = cetchUpObject.GetCetchValue(line.Substring(0, nextSymbolIndex));
+            modifiedValue = cetchUpObject.GetCetchValue(line.Substring(0, equalSymbolIndex));
             line = line.Substring(equalSymbolIndex + 1);
 
             bool loop = true;
@@ -72,7 +72,7 @@ namespace CetchUp
         {
             currentValue = GetValueFromValueElement(equation[0]);
 
-            EEmodifier lastMod;
+            EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
             for (int i = 1; i < equation.Count; i++)
             {
                 if (equation[i] is EEmodifier)

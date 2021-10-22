@@ -8,7 +8,7 @@ namespace CetchUp
         private float baseValue;
         private float value;
         private float multiplier;
-        private List<ModedValue> valueMods = List<ModedValue>();
+        private List<ModedValue> valueMods = new List<ModedValue>();
 
         public float Total => value * multiplier;
         public event EventHandler<float> changed;
@@ -19,7 +19,7 @@ namespace CetchUp
             set
             {
                 baseValue = value;
-                valueChanged.Invoke(Total);
+                changed.Invoke(this, Total);
             }
         }
 
@@ -42,16 +42,16 @@ namespace CetchUp
                 value -= modV.Value;
                 value += modV.CalculateValue();
             }
-            changed.Invoke(Total);
+            changed.Invoke(this, Total);
         }
 
-        public AddModedValue(ModedValue modedValue)
+        public void AddModedValue(ModedValue modedValue)
         {
             valueMods.Add(modedValue);
             modedValue.removed += OnModedValueRemoved;
         }
 
-        private OnModedValueRemoved(object sender, ModedValue modedValue)
+        private void OnModedValueRemoved(object sender, ModedValue modedValue)
         {
             valueMods.Remove(modedValue);
         }
