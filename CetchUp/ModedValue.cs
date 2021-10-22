@@ -4,20 +4,37 @@ using CetchUp.EquationElements;
 
 namespace CetchUp
 {
-    internal struct ModedValue
+    internal class ModedValue
     {
+        private bool isMultiplier = false;
+        private CetchUpObject cetchUpObject;
         private float currentValue = 0;
         private List<IEquationElement> equation = new List<IEquationElement>();
-        private string modifiedValue;
+        private CetchValue modifiedValue;
 
-        public void AddFromCetchLine(string line, bool preShortened = false)
+        public float Value => currentValue;
+        public bool IsMultiplier => isMultiplier;
+        public event EventHandler<ModedValue> removed;
+
+        public ModedValue(CetchUpObject cetchUpObject, string cetchLine)
+        {
+            this.cetchUpObject = cetchUpObject;
+            PopulateFromCetchLine(cetchLine);
+            modifiedValue.ModifyValue(this);
+        }
+
+        private void PopulateFromCetchLine(string line, bool preShortened = false)
         {
             if (!preShortened)
             {
                 line.Replace(" ", "");
             }
-            int equalSymbolIndex = line.IndexOf('=');
-            modifiedValue = line.Substring(0, nextSymbolIndex);
+            int equalSymbolIndex = line.IndexOfAny('=', '%');
+            if (line.ToCharArray()[equalSymbolIndex] == '%')
+            {
+                isMultiplier = true;
+            }
+            modifiedValue = cetchUpObject.GetCetchValue(line.Substring(0, nextSymbolIndex));
             line = line.Substring(equalSymbolIndex + 1);
 
             bool loop = true;
@@ -51,7 +68,7 @@ namespace CetchUp
             }
         }
 
-        public CalculateValue(CetchUpObject cetchUpObject)
+        public float CalculateValue()
         {
             currentValue = GetValueFromValueElement(equation[0]);
 
@@ -73,6 +90,8 @@ namespace CetchUp
                     }
                 }
             }
+
+            return currentValue;
         }
 
         private float GetValueFromValueElement(IEquationElement element)
@@ -80,6 +99,12 @@ namespace CetchUp
             if (element is EEconstant) { return ((EEconstant)equation[0]).constantValue; }
             if (element is EEvariable) { return cetchUpObject.GetValue(((EEvariable)equation[0]).variableName); }
             throw new ArgumentException("Expected a value");
+        }
+
+        public void OnVariableChanged(object sender, float newValue)
+        {
+            CetchValue cetchValue = (CetchValue)sender;
+            cetchValue.ModifyValue(this);
         }
     }
 }

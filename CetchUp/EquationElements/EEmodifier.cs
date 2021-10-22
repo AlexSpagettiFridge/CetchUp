@@ -1,6 +1,6 @@
 namespace CetchUp.EquationElements
 {
-    public class EEmodifier
+    internal struct EEmodifier
     {
         public readonly ModifierType modtype;
 
