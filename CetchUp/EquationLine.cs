@@ -1,26 +1,34 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using CetchUp.EquationElements;
 
 namespace CetchUp
 {
-    internal class ModedValue
+    internal class EquationLine : ICetchLine
     {
         private bool isMultiplier = false;
-        private CetchUpObject cetchUpObject;
         private float currentValue = 0;
         private List<IEquationElement> equation = new List<IEquationElement>();
-        private CetchValue modifiedValue;
+        private string modifiedValue;
 
         public float Value => currentValue;
         public bool IsMultiplier => isMultiplier;
-        public event EventHandler<ModedValue> removed;
+        public event EventHandler<EquationLine> removed;
 
-        public ModedValue(CetchUpObject cetchUpObject, string cetchLine)
+        public EquationLine(string cetchLine)
         {
-            this.cetchUpObject = cetchUpObject;
             PopulateFromCetchLine(cetchLine);
-            modifiedValue.ModifyValue(this);
+        }
+
+        public void JoinObject(CetchUpObject cetchUpObject)
+        {
+            cetchUpObject.GetCetchValue(modifiedValue).ModifyValue(this);
+        }
+
+        public void Remove()
+        {
+            if (removed != null) { removed.Invoke(this, this); }
         }
 
         private void PopulateFromCetchLine(string line, bool preShortened = false)
@@ -34,7 +42,7 @@ namespace CetchUp
             {
                 isMultiplier = true;
             }
-            modifiedValue = cetchUpObject.GetCetchValue(line.Substring(0, equalSymbolIndex));
+            modifiedValue = line.Substring(0, equalSymbolIndex);
             line = line.Substring(equalSymbolIndex + 1);
 
             bool loop = true;
@@ -43,7 +51,7 @@ namespace CetchUp
                 int nextSymbolIndex = line.IndexOfAny(new char[] { '+', '-', '/', '*', ';' });
                 string frontArea = line.Substring(0, nextSymbolIndex);
                 float number;
-                if (float.TryParse(frontArea, out number))
+                if (float.TryParse(frontArea, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out number))
                 {
                     equation.Add(new EEconstant(number));
                 }
@@ -68,9 +76,9 @@ namespace CetchUp
             }
         }
 
-        public float CalculateValue()
+        public float CalculateValue(CetchUpObject cetchUpObject)
         {
-            currentValue = GetValueFromValueElement(equation[0]);
+            currentValue = GetValueFromValueElement(cetchUpObject, equation[0]);
 
             EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
             for (int i = 1; i < equation.Count; i++)
@@ -83,10 +91,10 @@ namespace CetchUp
                 {
                     switch (lastMod.modtype)
                     {
-                        case EEmodifier.ModifierType.Add: currentValue += GetValueFromValueElement(equation[i]); break;
-                        case EEmodifier.ModifierType.Subtract: currentValue -= GetValueFromValueElement(equation[i]); break;
-                        case EEmodifier.ModifierType.Multiply: currentValue *= GetValueFromValueElement(equation[i]); break;
-                        case EEmodifier.ModifierType.Divide: currentValue /= GetValueFromValueElement(equation[i]); break;
+                        case EEmodifier.ModifierType.Add: currentValue += GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Subtract: currentValue -= GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Multiply: currentValue *= GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Divide: currentValue /= GetValueFromValueElement(cetchUpObject, equation[i]); break;
                     }
                 }
             }
@@ -94,7 +102,7 @@ namespace CetchUp
             return currentValue;
         }
 
-        private float GetValueFromValueElement(IEquationElement element)
+        private float GetValueFromValueElement(CetchUpObject cetchUpObject, IEquationElement element)
         {
             if (element is EEconstant) { return ((EEconstant)equation[0]).constantValue; }
             if (element is EEvariable) { return cetchUpObject.GetValue(((EEvariable)equation[0]).variableName); }

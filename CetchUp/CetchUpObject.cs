@@ -10,24 +10,20 @@ namespace CetchUp
         private Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();
         private List<CetchModifier> modifiers = new List<CetchModifier>();
 
-        public CetchUpObject(string filePath)
+        public void ApplyModifier(CetchModifier modifier)
         {
-            StreamReader reader = new StreamReader(filePath);
-            Populate(reader.ReadToEnd());
+            modifiers.Add(modifier);
+            modifier.ModifyCetchObject(this);
         }
 
-        private void Populate(string cetchData)
+        public void RemoveModifier(CetchModifier modifier){
+            modifiers.Remove(modifier);
+            modifier.RemoveFromCetchObject(this);
+        }
+
+        public void AddNewValue(string name, float defaultValue = 0, float defaultModifier = 1)
         {
-            Regex equationReg = new Regex("/[=%]");
-            int index = 0;
-            while ((index = cetchData.IndexOf(';')) != -1)
-            {
-                string line = cetchData.Substring(0, index + 1);
-                cetchData = cetchData.Substring(index + 1);
-                if (equationReg.IsMatch(line)){
-                    Console.WriteLine(line);
-                }
-            }
+            values.Add(name, new CetchValue(this, defaultValue, defaultModifier));
         }
 
         public float GetValue(string valueName)
@@ -42,8 +38,12 @@ namespace CetchUp
             }
         }
 
-        internal CetchValue GetCetchValue(string valueName)
+        public CetchValue GetCetchValue(string valueName)
         {
+            if (!values.ContainsKey(valueName))
+            {
+                return null;
+            }
             return values[valueName];
         }
     }

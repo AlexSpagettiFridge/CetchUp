@@ -3,14 +3,15 @@ using System;
 
 namespace CetchUp
 {
-    internal class CetchValue
+    public class CetchValue
     {
+        private CetchUpObject cetchUpObject;
         private float baseValue;
         private float value;
         private float multiplier;
-        private List<ModedValue> valueMods = new List<ModedValue>();
+        private List<EquationLine> valueMods = new List<EquationLine>();
 
-        public float Total => value * multiplier;
+        public float Total => (baseValue + value) * multiplier;
         public event EventHandler<float> changed;
 
         public float BaseValue
@@ -19,41 +20,52 @@ namespace CetchUp
             set
             {
                 baseValue = value;
-                changed.Invoke(this, Total);
+                if (changed != null) { changed.Invoke(this, Total); }
             }
         }
 
-        public CetchValue(float value, float multiplier = 1)
+        public CetchValue(CetchUpObject cetchUpObject, float value, float multiplier = 1)
         {
+            this.cetchUpObject = cetchUpObject;
             baseValue = value;
             this.value = value;
             this.multiplier = multiplier;
         }
 
-        public void ModifyValue(ModedValue modV)
+        internal void ModifyValue(EquationLine modV)
         {
             if (modV.IsMultiplier)
             {
                 multiplier -= modV.Value;
-                multiplier += modV.CalculateValue();
+                multiplier += modV.CalculateValue(cetchUpObject);
             }
             else
             {
                 value -= modV.Value;
-                value += modV.CalculateValue();
+                value += modV.CalculateValue(cetchUpObject);
             }
-            changed.Invoke(this, Total);
+            modV.removed += OnModedValueRemoved;
+            if (changed != null) { changed.Invoke(this, Total); }
         }
 
-        public void AddModedValue(ModedValue modedValue)
+        internal void AddModedValue(EquationLine modedValue)
         {
             valueMods.Add(modedValue);
             modedValue.removed += OnModedValueRemoved;
         }
 
-        private void OnModedValueRemoved(object sender, ModedValue modedValue)
+        private void OnModedValueRemoved(object sender, EquationLine modedValue)
         {
             valueMods.Remove(modedValue);
+            if (modedValue.IsMultiplier)
+            {
+                multiplier -= modedValue.Value;
+            }
+            else
+            {
+                value -= modedValue.Value;
+            }
+            modedValue.removed -= OnModedValueRemoved;
         }
 
     }

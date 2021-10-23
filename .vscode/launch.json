@@ -5,16 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Test console App",
+            "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Test/bin/Debug/<target-framework>/Test.dll",
+            "program": "${workspaceFolder}/Test/bin/Debug/net5.0/Test.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Test",
-            "stopAtEntry": false,
-            "console": "internalConsole"
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
         }
-                
     ]
 }
