@@ -17,8 +17,8 @@ namespace CetchUp
         }
 
         public void RemoveModifier(CetchModifier modifier){
-            modifiers.Remove(modifier);
             modifier.RemoveFromCetchObject(this);
+            modifiers.Remove(modifier);
         }
 
         public void AddNewValue(string name, float defaultValue = 0, float defaultModifier = 1)

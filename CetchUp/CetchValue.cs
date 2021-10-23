@@ -7,12 +7,12 @@ namespace CetchUp
     {
         private CetchUpObject cetchUpObject;
         private float baseValue;
-        private float value;
+        private float value = 0;
         private float multiplier;
-        private List<EquationLine> valueMods = new List<EquationLine>();
+        private Dictionary<EquationLine, float> valueMods = new Dictionary<EquationLine, float>();
 
         public float Total => (baseValue + value) * multiplier;
-        public event EventHandler<float> changed;
+        public event EventHandler<ChangedEventArgs> changed;
 
         public float BaseValue
         {
@@ -20,7 +20,7 @@ namespace CetchUp
             set
             {
                 baseValue = value;
-                if (changed != null) { changed.Invoke(this, Total); }
+                if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
             }
         }
 
@@ -28,44 +28,57 @@ namespace CetchUp
         {
             this.cetchUpObject = cetchUpObject;
             baseValue = value;
-            this.value = value;
             this.multiplier = multiplier;
         }
 
         internal void ModifyValue(EquationLine modV)
         {
+            float modVValue = modV.CalculateValue(cetchUpObject);
             if (modV.IsMultiplier)
             {
-                multiplier -= modV.Value;
-                multiplier += modV.CalculateValue(cetchUpObject);
+                multiplier -= valueMods[modV];
+                multiplier += modVValue;
             }
             else
             {
-                value -= modV.Value;
-                value += modV.CalculateValue(cetchUpObject);
+                value -= valueMods[modV];
+                value += modVValue;
             }
-            modV.removed += OnModedValueRemoved;
-            if (changed != null) { changed.Invoke(this, Total); }
+            valueMods[modV] = modVValue;
+            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
         }
 
         internal void AddModedValue(EquationLine modedValue)
         {
-            valueMods.Add(modedValue);
+            valueMods.Add(modedValue, 0);
             modedValue.removed += OnModedValueRemoved;
         }
 
         private void OnModedValueRemoved(object sender, EquationLine modedValue)
         {
-            valueMods.Remove(modedValue);
             if (modedValue.IsMultiplier)
             {
-                multiplier -= modedValue.Value;
+                multiplier -= valueMods[modedValue];
             }
             else
             {
-                value -= modedValue.Value;
+                value -= valueMods[modedValue];
             }
             modedValue.removed -= OnModedValueRemoved;
+            valueMods.Remove(modedValue);
+            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
+        }
+
+        public class ChangedEventArgs : EventArgs
+        {
+            public float newValue;
+            public CetchUpObject cetchUpObject;
+
+            public ChangedEventArgs(CetchUpObject cetchUpObject, float newValue)
+            {
+                this.cetchUpObject = cetchUpObject;
+                this.newValue = newValue;
+            }
         }
 
     }

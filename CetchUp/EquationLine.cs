@@ -8,11 +8,9 @@ namespace CetchUp
     internal class EquationLine : ICetchLine
     {
         private bool isMultiplier = false;
-        private float currentValue = 0;
         private List<IEquationElement> equation = new List<IEquationElement>();
         private string modifiedValue;
 
-        public float Value => currentValue;
         public bool IsMultiplier => isMultiplier;
         public event EventHandler<EquationLine> removed;
 
@@ -23,11 +21,21 @@ namespace CetchUp
 
         public void JoinObject(CetchUpObject cetchUpObject)
         {
-            cetchUpObject.GetCetchValue(modifiedValue).ModifyValue(this);
+            CetchValue cetchValue = cetchUpObject.GetCetchValue(modifiedValue);
+            cetchValue.AddModedValue(this);
+            cetchValue.ModifyValue(this);
+            foreach (CetchValue depVariable in GetDependentValues(cetchUpObject))
+            {
+                depVariable.changed += OnVariableChanged;
+            }
         }
 
-        public void Remove()
+        public void Remove(CetchUpObject cetchUpObject)
         {
+            foreach (CetchValue depVariable in GetDependentValues(cetchUpObject))
+            {
+                depVariable.changed -= OnVariableChanged;
+            }
             if (removed != null) { removed.Invoke(this, this); }
         }
 
@@ -78,7 +86,7 @@ namespace CetchUp
 
         public float CalculateValue(CetchUpObject cetchUpObject)
         {
-            currentValue = GetValueFromValueElement(cetchUpObject, equation[0]);
+            float value = GetValueFromValueElement(cetchUpObject, equation[0]);
 
             EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
             for (int i = 1; i < equation.Count; i++)
@@ -91,28 +99,41 @@ namespace CetchUp
                 {
                     switch (lastMod.modtype)
                     {
-                        case EEmodifier.ModifierType.Add: currentValue += GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                        case EEmodifier.ModifierType.Subtract: currentValue -= GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                        case EEmodifier.ModifierType.Multiply: currentValue *= GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                        case EEmodifier.ModifierType.Divide: currentValue /= GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Add: value += GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Subtract: value -= GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Multiply: value *= GetValueFromValueElement(cetchUpObject, equation[i]); break;
+                        case EEmodifier.ModifierType.Divide: value /= GetValueFromValueElement(cetchUpObject, equation[i]); break;
                     }
                 }
             }
 
-            return currentValue;
+            return value;
         }
 
         private float GetValueFromValueElement(CetchUpObject cetchUpObject, IEquationElement element)
         {
-            if (element is EEconstant) { return ((EEconstant)equation[0]).constantValue; }
-            if (element is EEvariable) { return cetchUpObject.GetValue(((EEvariable)equation[0]).variableName); }
+            if (element is EEconstant) { return ((EEconstant)element).constantValue; }
+            if (element is EEvariable) { return cetchUpObject.GetValue(((EEvariable)element).variableName); }
             throw new ArgumentException("Expected a value");
         }
 
-        public void OnVariableChanged(object sender, float newValue)
+        private List<CetchValue> GetDependentValues(CetchUpObject cetchUpObject)
         {
-            CetchValue cetchValue = (CetchValue)sender;
-            cetchValue.ModifyValue(this);
+            List<CetchValue> result = new List<CetchValue>();
+            foreach (IEquationElement element in equation)
+            {
+                if (element is EEvariable)
+                {
+                    EEvariable depVar = (EEvariable)element;
+                    result.Add(cetchUpObject.GetCetchValue(depVar.variableName));
+                }
+            }
+            return result;
+        }
+
+        public void OnVariableChanged(object sender, CetchValue.ChangedEventArgs args)
+        {
+            args.cetchUpObject.GetCetchValue(modifiedValue).ModifyValue(this);
         }
     }
 }

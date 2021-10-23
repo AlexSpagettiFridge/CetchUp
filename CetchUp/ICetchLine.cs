@@ -3,6 +3,6 @@ namespace CetchUp
     public interface ICetchLine
     {
         void JoinObject(CetchUpObject cetchUpObject);
-        void Remove();
+        void Remove(CetchUpObject cetchUpObject);
     }
 }

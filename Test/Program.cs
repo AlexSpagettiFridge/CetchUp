@@ -21,7 +21,7 @@ namespace Test
             WriteCurrentStats();
             cetchUpObject.RemoveModifier(bla);
             WriteCurrentStats();
-            
+            CetchUpObject moo = cetchUpObject;
             Console.WriteLine("the End");
         }
 

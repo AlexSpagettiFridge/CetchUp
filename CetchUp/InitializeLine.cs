@@ -35,6 +35,6 @@ namespace CetchUp
             cetchUpObject.AddNewValue(variableName, defaultValue, defaultModifier);
         }
 
-        public void Remove() { }
+        public void Remove(CetchUpObject cetchUpObject) { }
     }
 }

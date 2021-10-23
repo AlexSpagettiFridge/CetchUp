@@ -1,2 +1,4 @@
 #maxHealth =5?1;
 #smellResistance =0?1;
+#endurance =5;
+maxHealth = endurance * 2;

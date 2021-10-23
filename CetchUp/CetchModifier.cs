@@ -53,7 +53,7 @@ namespace CetchUp
         {
             foreach (ICetchLine line in lines)
             {
-                line.Remove();
+                line.Remove(cetchUpObject);
             }
         }
     }

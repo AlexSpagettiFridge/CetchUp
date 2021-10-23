@@ -1,3 +1,2 @@
-maxHealth = 100;
-smellResistance = 3;
+endurance = 5;
 smellResistance % 1.5;
