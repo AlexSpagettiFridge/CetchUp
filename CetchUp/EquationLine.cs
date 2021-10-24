@@ -56,16 +56,19 @@ namespace CetchUp
             bool loop = true;
             while (loop)
             {
-                int nextSymbolIndex = line.IndexOfAny(new char[] { '+', '-', '/', '*', ';' });
+                int nextSymbolIndex = line.IndexOfAny(new char[] { '+', '-', '/', '*', ';', '(', ')' });
                 string frontArea = line.Substring(0, nextSymbolIndex);
                 float number;
-                if (float.TryParse(frontArea, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out number))
+                if (frontArea != "")
                 {
-                    equation.Add(new EEconstant(number));
-                }
-                else
-                {
-                    equation.Add(new EEvariable(frontArea));
+                    if (float.TryParse(frontArea, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out number))
+                    {
+                        equation.Add(new EEconstant(number));
+                    }
+                    else
+                    {
+                        equation.Add(new EEvariable(frontArea));
+                    }
                 }
                 char currentSymbol = line.ToCharArray()[nextSymbolIndex];
                 switch (currentSymbol)
@@ -79,6 +82,10 @@ namespace CetchUp
                     case ';':
                         loop = false;
                         break;
+                    case '(':
+                    case ')':
+                        equation.Add(new EEbracket(currentSymbol));
+                        break;
                 }
                 line = line.Substring(nextSymbolIndex + 1);
             }
@@ -86,27 +93,46 @@ namespace CetchUp
 
         public float CalculateValue(CetchUpObject cetchUpObject)
         {
-            float value = GetValueFromValueElement(cetchUpObject, equation[0]);
+            int i = -1;
+            return CalculateValue(cetchUpObject, ref i);
+        }
 
+        public float CalculateValue(CetchUpObject cetchUpObject, ref int i)
+        {
+            i++;
+            float value = GetValueFromValueElement(cetchUpObject, equation[i]);
             EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
-            for (int i = 1; i < equation.Count; i++)
+            while ((i++) < equation.Count - 1)
             {
                 if (equation[i] is EEmodifier)
                 {
                     lastMod = (EEmodifier)equation[i];
+                    continue;
+                }
+                float calcValue = 0;
+                if (equation[i] is EEbracket)
+                {
+                    if (((EEbracket)equation[i]).isStart)
+                    {
+                        calcValue = CalculateValue(cetchUpObject, ref i);
+                    }
+                    else
+                    {
+                        return value;
+                    }
                 }
                 if (equation[i] is EEconstant || equation[i] is EEvariable)
                 {
-                    switch (lastMod.modtype)
-                    {
-                        case EEmodifier.ModifierType.Add: value += GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                        case EEmodifier.ModifierType.Subtract: value -= GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                        case EEmodifier.ModifierType.Multiply: value *= GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                        case EEmodifier.ModifierType.Divide: value /= GetValueFromValueElement(cetchUpObject, equation[i]); break;
-                    }
+                    calcValue = GetValueFromValueElement(cetchUpObject, equation[i]);
+                }
+                switch (lastMod.modtype)
+                {
+                    case EEmodifier.ModifierType.Add: value += calcValue; break;
+                    case EEmodifier.ModifierType.Subtract: value -= calcValue; break;
+                    case EEmodifier.ModifierType.Multiply: value *= calcValue; break;
+                    case EEmodifier.ModifierType.Divide: value /= calcValue; break;
                 }
             }
-
             return value;
         }
 
