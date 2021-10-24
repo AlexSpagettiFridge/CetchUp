@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using CetchUp.CetchLines;
 
 namespace CetchUp
 {

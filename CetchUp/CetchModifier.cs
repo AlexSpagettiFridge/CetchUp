@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using System.Text.RegularExpressions;
+using CetchUp.CetchLines;
 
 namespace CetchUp
 {
@@ -9,6 +10,8 @@ namespace CetchUp
     {
         CetchUpObject cetchUpObject;
         private List<ICetchLine> lines = new List<ICetchLine>();
+        private static readonly Regex equationReg = new Regex("^.*[=%].*$"), initReg = new Regex("^#.*$");
+        private static readonly Regex endReg = new Regex("^end$"), ifReg = new Regex("^if:.*[<>=]{1,2}.*$");
 
         public CetchModifier(CetchUpObject cetchUpObject, string filePath)
         {
@@ -20,25 +23,40 @@ namespace CetchUp
         private void Populate(string cetchData)
         {
             cetchData = cetchData.Replace("\r\n", "").Replace("\n", "").Replace("\r", "").Replace(" ", "");
-            Regex equationReg = new Regex("^.*[=%].*$");
-            Regex initReg = new Regex("^#.*$");
+
+            lines = GetLinesFromCetchData(ref cetchData);
+        }
+
+        private List<ICetchLine> GetLinesFromCetchData(ref string cetchData)
+        {
+            List<ICetchLine> result = new List<ICetchLine>();
             int index = 0;
             while ((index = cetchData.IndexOf(';')) != -1)
             {
                 string line = cetchData.Substring(0, index + 1);
                 cetchData = cetchData.Substring(index + 1);
 
+                if (endReg.IsMatch(line))
+                {
+                    return result;
+                }
+                if (ifReg.IsMatch(line))
+                {
+                    result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
+                    continue;
+                }
                 if (initReg.IsMatch(line))
                 {
-                    lines.Add(new InitializeLine(line));
+                    result.Add(new InitializeLine(line));
                     continue;
                 }
                 if (equationReg.IsMatch(line))
                 {
-                    lines.Add(new EquationLine(line));
+                    result.Add(new EquationLine(line));
                     continue;
                 }
             }
+            return result;
         }
 
         public void ModifyCetchObject(CetchUpObject cetchUpObject)
