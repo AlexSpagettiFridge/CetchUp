@@ -31,6 +31,7 @@ namespace Test
             Console.WriteLine($"maxHealth: {cetchUpObject.GetValue("maxHealth")}");
             Console.WriteLine($"smellResistance: {cetchUpObject.GetValue("smellResistance")}");
             Console.WriteLine($"endurance: {cetchUpObject.GetValue("endurance")}");
+            Console.WriteLine($"bigBoyCetificate: {cetchUpObject.GetValue("bigBoyCetificate")}");
         }
     }
 }

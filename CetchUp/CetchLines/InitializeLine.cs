@@ -1,6 +1,6 @@
 using System;
 
-namespace CetchUp
+namespace CetchUp.CetchLines
 {
     public class InitializeLine : ICetchLine
     {

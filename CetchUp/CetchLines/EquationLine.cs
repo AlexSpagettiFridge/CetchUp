@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using CetchUp.EquationElements;
 
-namespace CetchUp
+namespace CetchUp.CetchLines
 {
     internal class EquationLine : ICetchLine
     {
@@ -58,17 +58,10 @@ namespace CetchUp
             {
                 int nextSymbolIndex = line.IndexOfAny(new char[] { '+', '-', '/', '*', ';', '(', ')' });
                 string frontArea = line.Substring(0, nextSymbolIndex);
-                float number;
+
                 if (frontArea != "")
                 {
-                    if (float.TryParse(frontArea, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out number))
-                    {
-                        equation.Add(new EEconstant(number));
-                    }
-                    else
-                    {
-                        equation.Add(new EEvariable(frontArea));
-                    }
+                    equation.Add(EquationHelper.ParseValueElement(frontArea));
                 }
                 char currentSymbol = line.ToCharArray()[nextSymbolIndex];
                 switch (currentSymbol)
@@ -100,7 +93,7 @@ namespace CetchUp
         public float CalculateValue(CetchUpObject cetchUpObject, ref int i)
         {
             i++;
-            float value = GetValueFromValueElement(cetchUpObject, equation[i]);
+            float value = EquationHelper.GetValueFromValueElement(cetchUpObject, equation[i]);
             EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
             while ((i++) < equation.Count - 1)
             {
@@ -123,7 +116,7 @@ namespace CetchUp
                 }
                 if (equation[i] is EEconstant || equation[i] is EEvariable)
                 {
-                    calcValue = GetValueFromValueElement(cetchUpObject, equation[i]);
+                    calcValue = EquationHelper.GetValueFromValueElement(cetchUpObject, equation[i]);
                 }
                 switch (lastMod.modtype)
                 {
@@ -134,13 +127,6 @@ namespace CetchUp
                 }
             }
             return value;
-        }
-
-        private float GetValueFromValueElement(CetchUpObject cetchUpObject, IEquationElement element)
-        {
-            if (element is EEconstant) { return ((EEconstant)element).constantValue; }
-            if (element is EEvariable) { return cetchUpObject.GetValue(((EEvariable)element).variableName); }
-            throw new ArgumentException("Expected a value");
         }
 
         private List<CetchValue> GetDependentValues(CetchUpObject cetchUpObject)
