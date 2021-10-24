@@ -59,13 +59,16 @@ namespace CetchUp
                 int nextSymbolIndex = line.IndexOfAny(new char[] { '+', '-', '/', '*', ';', '(', ')' });
                 string frontArea = line.Substring(0, nextSymbolIndex);
                 float number;
-                if (float.TryParse(frontArea, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out number))
+                if (frontArea != "")
                 {
-                    equation.Add(new EEconstant(number));
-                }
-                else
-                {
-                    equation.Add(new EEvariable(frontArea));
+                    if (float.TryParse(frontArea, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out number))
+                    {
+                        equation.Add(new EEconstant(number));
+                    }
+                    else
+                    {
+                        equation.Add(new EEvariable(frontArea));
+                    }
                 }
                 char currentSymbol = line.ToCharArray()[nextSymbolIndex];
                 switch (currentSymbol)
@@ -90,12 +93,13 @@ namespace CetchUp
 
         public float CalculateValue(CetchUpObject cetchUpObject)
         {
-            int i = 0;
+            int i = -1;
             return CalculateValue(cetchUpObject, ref i);
         }
 
         public float CalculateValue(CetchUpObject cetchUpObject, ref int i)
         {
+            i++;
             float value = GetValueFromValueElement(cetchUpObject, equation[i]);
             EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
             while ((i++) < equation.Count - 1)
@@ -103,6 +107,7 @@ namespace CetchUp
                 if (equation[i] is EEmodifier)
                 {
                     lastMod = (EEmodifier)equation[i];
+                    continue;
                 }
                 float calcValue = 0;
                 if (equation[i] is EEbracket)
@@ -110,7 +115,9 @@ namespace CetchUp
                     if (((EEbracket)equation[i]).isStart)
                     {
                         calcValue = CalculateValue(cetchUpObject, ref i);
-                    }else{
+                    }
+                    else
+                    {
                         return value;
                     }
                 }

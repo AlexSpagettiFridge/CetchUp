@@ -14,6 +14,7 @@ namespace Test
 
             CetchModifier header = new CetchModifier(cetchUpObject, "testfiles/Header.cetch");
             CetchModifier bla = new CetchModifier(cetchUpObject, "testfiles/Bla.cetch");
+            CetchUpObject moo = cetchUpObject;
 
             cetchUpObject.ApplyModifier(header);
             WriteCurrentStats();
@@ -21,14 +22,15 @@ namespace Test
             WriteCurrentStats();
             cetchUpObject.RemoveModifier(bla);
             WriteCurrentStats();
-            CetchUpObject moo = cetchUpObject;
+            
             Console.WriteLine("the End");
         }
-
-        private static void WriteCurrentStats(){
+        private static void WriteCurrentStats()
+        {
             Console.WriteLine($"#----Current-Stats----#");
             Console.WriteLine($"maxHealth: {cetchUpObject.GetValue("maxHealth")}");
             Console.WriteLine($"smellResistance: {cetchUpObject.GetValue("smellResistance")}");
+            Console.WriteLine($"endurance: {cetchUpObject.GetValue("endurance")}");
         }
     }
 }
