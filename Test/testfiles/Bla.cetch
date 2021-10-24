@@ -1,2 +1,2 @@
-endurance = 5;
+endurance = 5 * (1 + 1);
 smellResistance % 1.5;
