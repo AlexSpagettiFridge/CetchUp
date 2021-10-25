@@ -5,27 +5,24 @@ namespace Test
 {
     class Program
     {
-        public static CetchUpObject cetchUpObject;
-
         static void Main(string[] args)
         {
             Console.WriteLine("Doing it...");
-            cetchUpObject = new CetchUpObject();
+            CetchUpObject cetchUpObject = new CetchUpObject();
 
-            CetchModifier header = new CetchModifier(cetchUpObject, "testfiles/Header.cetch");
-            CetchModifier bla = new CetchModifier(cetchUpObject, "testfiles/Bla.cetch");
-            CetchUpObject moo = cetchUpObject;
+            CetchModifierRepository repository = new CetchModifierRepository();
+            repository.AddDirectory("testfiles/");
 
-            cetchUpObject.ApplyModifier(header);
-            WriteCurrentStats();
-            cetchUpObject.ApplyModifier(bla);
-            WriteCurrentStats();
-            cetchUpObject.RemoveModifier(bla);
-            WriteCurrentStats();
-            
+            cetchUpObject.ApplyModifier(repository["Header"]);
+            WriteCurrentStats(cetchUpObject);
+            cetchUpObject.ApplyModifier(repository["Bla"]);
+            WriteCurrentStats(cetchUpObject);
+            cetchUpObject.RemoveModifier(repository["Bla"]);
+            WriteCurrentStats(cetchUpObject);
+
             Console.WriteLine("the End");
         }
-        private static void WriteCurrentStats()
+        private static void WriteCurrentStats(CetchUpObject cetchUpObject)
         {
             Console.WriteLine($"#----Current-Stats----#");
             Console.WriteLine($"maxHealth: {cetchUpObject.GetValue("maxHealth")}");

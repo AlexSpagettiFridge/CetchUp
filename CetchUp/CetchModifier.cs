@@ -8,14 +8,12 @@ namespace CetchUp
 {
     public class CetchModifier
     {
-        CetchUpObject cetchUpObject;
         private List<ICetchLine> lines = new List<ICetchLine>();
         private static readonly Regex equationReg = new Regex("^.*[=%].*$"), initReg = new Regex("^#.*$");
         private static readonly Regex endReg = new Regex("^end$"), ifReg = new Regex("^if:.*[<>=]{1,2}.*$");
 
-        public CetchModifier(CetchUpObject cetchUpObject, string filePath)
+        public CetchModifier(string filePath)
         {
-            this.cetchUpObject = cetchUpObject;
             StreamReader reader = new StreamReader(filePath);
             Populate(reader.ReadToEnd());
         }
