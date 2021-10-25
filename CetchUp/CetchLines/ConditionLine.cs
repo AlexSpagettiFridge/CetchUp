@@ -3,15 +3,12 @@ using CetchUp.EquationElements;
 
 namespace CetchUp.CetchLines
 {
-    internal class ConditionLine : ICetchLine
+    internal class ConditionLine : ScopeLine, ICetchLine
     {
-        private List<ICetchLine> innerLines = new List<ICetchLine>();
         private List<Condition> conditions = new List<Condition>();
-        private List<CetchUpObject> metObject = new List<CetchUpObject>();
 
-        public ConditionLine(string line, List<ICetchLine> lines)
+        public ConditionLine(string line, List<ICetchLine> lines) : base(lines)
         {
-            innerLines = lines;
             line = line.Substring(3);
             while (true)
             {
@@ -48,23 +45,11 @@ namespace CetchUp.CetchLines
 
             if (conditionsMet)
             {
-                if (metObject.Contains(cetchUpObject)) { return; }
-                metObject.Add(cetchUpObject);
-                foreach (ICetchLine line in innerLines)
-                {
-                    line.JoinObject(cetchUpObject);
-                }
+                JoinInnerLines(cetchUpObject);
             }
             else
             {
-                if (metObject.Contains(cetchUpObject))
-                {
-                    metObject.Remove(cetchUpObject);
-                    foreach (ICetchLine line in innerLines)
-                    {
-                        line.Remove(cetchUpObject);
-                    }
-                }
+                RemoveInnerLines(cetchUpObject);
             }
         }
 
@@ -78,10 +63,7 @@ namespace CetchUp.CetchLines
 
         public void Remove(CetchUpObject cetchUpObject)
         {
-            foreach (ICetchLine line in innerLines)
-            {
-                line.Remove(cetchUpObject);
-            }
+            RemoveInnerLines(cetchUpObject);
         }
 
         public void OnRelevantValueChanged(object sender, CetchValue.ChangedEventArgs args)
