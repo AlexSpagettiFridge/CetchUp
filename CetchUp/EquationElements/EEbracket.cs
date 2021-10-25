@@ -1,6 +1,6 @@
 namespace CetchUp.EquationElements
 {
-    public class EEbracket : IEquationElement
+    internal class EEbracket : IEquationElement
     {
         public readonly bool isStart;
 

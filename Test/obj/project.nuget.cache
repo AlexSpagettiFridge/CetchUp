@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+a2gO1YRxygjfBYYwvW0YZd6Mg+suBOtaj5m1IFQACz0greFGn2tRF9oUZmS5CqRNY8nB1pRAV+zeC5CsNrk/Q==",
+  "dgSpecHash": "cvTMK9mv+OYI7t/yd6RSUflVQ2/zacUeh+/MomMhgBkhxfWCnvnPHLTp6gYxbu4ttzZsH7lHHeDI4dxrkYhpPw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\PC\\Dropbox\\Projekte\\prototypes\\CetchUp\\Test\\Test.csproj",
+  "projectFilePath": "C:\\Users\\PC\\Dropbox\\Projekte\\util\\CetchUp\\Test\\Test.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

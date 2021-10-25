@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CetchUp.CetchLines
 {
-    public abstract class ScopeLine
+    internal abstract class ScopeLine
     {
         private List<ICetchLine> innerLines = new List<ICetchLine>();
         private List<CetchUpObject> joinedObjects = new List<CetchUpObject>();

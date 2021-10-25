@@ -2,7 +2,7 @@ using System;
 
 namespace CetchUp.CetchLines
 {
-    public class InitializeLine : ICetchLine
+    internal class InitializeLine : ICetchLine
     {
         private string variableName;
         private float defaultValue, defaultModifier;

@@ -1,0 +1,8 @@
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\bin\Debug\net472\CetchUp.dll
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\bin\Debug\net472\CetchUp.pdb
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\obj\Debug\net472\CetchUp.csproj.AssemblyReference.cache
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\obj\Debug\net472\CetchUp.AssemblyInfoInputs.cache
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\obj\Debug\net472\CetchUp.AssemblyInfo.cs
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\obj\Debug\net472\CetchUp.csproj.CoreCompileInputs.cache
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\obj\Debug\net472\CetchUp.dll
+C:\Users\PC\Dropbox\Projekte\util\CetchUp\CetchUp\obj\Debug\net472\CetchUp.pdb

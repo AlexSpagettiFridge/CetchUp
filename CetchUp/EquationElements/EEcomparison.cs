@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
 {
-    public class EEcomparison : IEquationElement
+    internal class EEcomparison : IEquationElement
     {
         public ComparisonType comparisonType;
         public bool isInclusive;
