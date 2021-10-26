@@ -9,13 +9,18 @@ namespace CetchUp
     public class CetchModifier
     {
         private List<ICetchLine> lines = new List<ICetchLine>();
-        private static readonly Regex equationReg = new Regex("^.*[=%].*$"), initReg = new Regex("^#.*$");
-        private static readonly Regex endReg = new Regex("^end$"), ifReg = new Regex("^if:.*[<>=]{1,2}.*$");
 
-        public CetchModifier(string filePath)
+        public CetchModifier(string genString)
         {
-            StreamReader reader = new StreamReader(filePath);
-            Populate(reader.ReadToEnd());
+            if (Regex.IsMatch(genString, @"^[a-zA-Z0-9\/]*\.cetch$"))
+            {
+                StreamReader reader = new StreamReader(genString);
+                Populate(reader.ReadToEnd());
+            }
+            else
+            {
+                Populate(genString);
+            }
         }
 
         private void Populate(string cetchData)
@@ -34,21 +39,21 @@ namespace CetchUp
                 string line = cetchData.Substring(0, index + 1);
                 cetchData = cetchData.Substring(index + 1);
 
-                if (endReg.IsMatch(line))
+                if (Regex.IsMatch(line, "^end$"))
                 {
                     return result;
                 }
-                if (ifReg.IsMatch(line))
+                if (Regex.IsMatch(line, "^if:.*[<>=]{1,2}.*$"))
                 {
                     result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
                     continue;
                 }
-                if (initReg.IsMatch(line))
+                if (Regex.IsMatch(line, "^#.*$"))
                 {
                     result.Add(new InitializeLine(line));
                     continue;
                 }
-                if (equationReg.IsMatch(line))
+                if (Regex.IsMatch(line, "^.*[=%].*$"))
                 {
                     result.Add(new EquationLine(line));
                     continue;

@@ -8,13 +8,28 @@ namespace CetchUp
         private Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();
         private List<CetchModifier> modifiers = new List<CetchModifier>();
 
+        public CetchModifier MakeModifer()
+        {
+            string genString = "";
+            foreach (KeyValuePair<string, CetchValue> item in values)
+            {
+                genString += $"{item.Key}={item.Value.Total / item.Value.Multiplier};";
+                if (item.Value.Multiplier != 1)
+                {
+                    genString += $"{item.Key}%{item.Value.Multiplier};";
+                }
+            }
+            return new CetchModifier(genString);
+        }
+
         public void ApplyModifier(CetchModifier modifier)
         {
             modifiers.Add(modifier);
             modifier.ModifyCetchObject(this);
         }
 
-        public void RemoveModifier(CetchModifier modifier){
+        public void RemoveModifier(CetchModifier modifier)
+        {
             modifier.RemoveFromCetchObject(this);
             modifiers.Remove(modifier);
         }

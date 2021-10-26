@@ -13,6 +13,7 @@ namespace CetchUp
         private Dictionary<EquationLine, float> valueMods = new Dictionary<EquationLine, float>();
 
         public float Total => (baseValue + value) * multiplier;
+        public float Multiplier => multiplier;
         public event EventHandler<ChangedEventArgs> changed;
 
         public float BaseValue

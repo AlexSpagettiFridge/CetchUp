@@ -13,12 +13,20 @@ namespace Test
             CetchModifierRepository repository = new CetchModifierRepository();
             repository.AddDirectory("testfiles/");
 
+            Console.WriteLine("CetchUpObject:");
             cetchUpObject.ApplyModifier(repository["Header"]);
             WriteCurrentStats(cetchUpObject);
             cetchUpObject.ApplyModifier(repository["Bla"]);
             WriteCurrentStats(cetchUpObject);
             cetchUpObject.RemoveModifier(repository["Bla"]);
             WriteCurrentStats(cetchUpObject);
+
+            Console.WriteLine("Cetchy:");
+            CetchUpObject cetchy = new CetchUpObject();
+            cetchy.ApplyModifier(repository["Header"]);
+            WriteCurrentStats(cetchy);
+            cetchy.ApplyModifier(cetchUpObject.MakeModifer());
+            WriteCurrentStats(cetchy);
 
             Console.WriteLine("the End");
         }
