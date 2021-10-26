@@ -37,7 +37,7 @@ namespace CetchUp
 
         public void AddNewValue(string name, float defaultValue = 0, float defaultModifier = 1)
         {
-            CetchValue value = new CetchValue(this, defaultValue, defaultModifier);
+            CetchValue value = new CetchValue(this, name, defaultValue, defaultModifier);
             values.Add(name, value);
             value.changed += OnValueChanged;
         }
@@ -54,9 +54,11 @@ namespace CetchUp
             }
         }
 
-        public bool TryGetValue(string valueName, out float value){
+        public bool TryGetValue(string valueName, out float value)
+        {
             value = 0;
-            if (values.ContainsKey(valueName)){
+            if (values.ContainsKey(valueName))
+            {
                 value = values[valueName].Total;
                 return true;
             }

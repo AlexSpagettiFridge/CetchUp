@@ -6,12 +6,14 @@ namespace CetchUp
 {
     public class CetchValue
     {
+        private readonly string name;
         private CetchUpObject cetchUpObject;
         private float baseValue;
         private float value = 0;
         private float multiplier;
         private Dictionary<EquationLine, float> valueMods = new Dictionary<EquationLine, float>();
 
+        public string Name => name;
         public float Total => (baseValue + value) * multiplier;
         public float Multiplier => multiplier;
         public event EventHandler<ChangedEventArgs> changed;
@@ -26,8 +28,9 @@ namespace CetchUp
             }
         }
 
-        public CetchValue(CetchUpObject cetchUpObject, float value, float multiplier = 1)
+        public CetchValue(CetchUpObject cetchUpObject, string name, float value, float multiplier = 1)
         {
+            this.name = name;
             this.cetchUpObject = cetchUpObject;
             baseValue = value;
             this.multiplier = multiplier;
