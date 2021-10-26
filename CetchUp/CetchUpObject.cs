@@ -7,6 +7,7 @@ namespace CetchUp
     {
         private Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();
         private List<CetchModifier> modifiers = new List<CetchModifier>();
+        public event EventHandler<ValueChangedEventArgs> valueChanged;
 
         public CetchModifier MakeModifer()
         {
@@ -36,7 +37,9 @@ namespace CetchUp
 
         public void AddNewValue(string name, float defaultValue = 0, float defaultModifier = 1)
         {
-            values.Add(name, new CetchValue(this, defaultValue, defaultModifier));
+            CetchValue value = new CetchValue(this, defaultValue, defaultModifier);
+            values.Add(name, value);
+            value.changed += OnValueChanged;
         }
 
         public float GetValue(string valueName)
@@ -58,6 +61,26 @@ namespace CetchUp
                 return null;
             }
             return values[valueName];
+        }
+
+        private void OnValueChanged(object sender, CetchValue.ChangedEventArgs args)
+        {
+            if (valueChanged != null)
+            {
+                valueChanged.Invoke(this, new ValueChangedEventArgs((CetchValue)sender, args.newValue));
+            }
+        }
+
+        public class ValueChangedEventArgs
+        {
+            public CetchValue changedValue;
+            public float newValue;
+
+            public ValueChangedEventArgs(CetchValue changedValue, float newValue)
+            {
+                this.changedValue = changedValue;
+                this.newValue = newValue;
+            }
         }
     }
 }
