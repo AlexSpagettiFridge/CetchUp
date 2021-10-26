@@ -54,6 +54,15 @@ namespace CetchUp
             }
         }
 
+        public bool TryGetValue(string valueName, out float value){
+            value = 0;
+            if (values.ContainsKey(valueName)){
+                value = values[valueName].Total;
+                return true;
+            }
+            return false;
+        }
+
         public CetchValue GetCetchValue(string valueName)
         {
             if (!values.ContainsKey(valueName))
