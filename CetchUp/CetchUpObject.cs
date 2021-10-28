@@ -22,11 +22,12 @@ namespace CetchUp
             return new CetchModifier(genString);
         }
 
-        public void ApplyModifier(CetchModifier modifier)
+        public CetchModifierEntry ApplyModifier(CetchModifier modifier)
         {
             CetchModifierEntry entry = new CetchModifierEntry(this, modifier);
             modifierEntries.Add(entry);
             modifier.ModifyCetchObject(entry);
+            return entry;
         }
 
         public bool TryRemoveModifier(CetchModifier modifier)
