@@ -12,23 +12,23 @@ namespace CetchUp.CetchLines
             innerLines = lines;
         }
 
-        public void JoinInnerLines(CetchUpObject cetchUpObject)
+        public void JoinInnerLines(CetchModifierEntry cetchModifierEntry)
         {
-            if (!joinedObjects.Contains(cetchUpObject)) { return; }
-            joinedObjects.Add(cetchUpObject);
+            if (joinedObjects.Contains(cetchModifierEntry.CetchUpObject)) { return; }
+            joinedObjects.Add(cetchModifierEntry.CetchUpObject);
             foreach (ICetchLine line in innerLines)
             {
-                line.JoinObject(cetchUpObject);
+                line.JoinObject(cetchModifierEntry);
             }
         }
 
-        public void RemoveInnerLines(CetchUpObject cetchUpObject)
+        public void RemoveInnerLines(CetchModifierEntry cetchModifierEntry)
         {
-            if (joinedObjects.Contains(cetchUpObject)) { return; }
-            joinedObjects.Remove(cetchUpObject);
+            if (!joinedObjects.Contains(cetchModifierEntry.CetchUpObject)) { return; }
+            joinedObjects.Remove(cetchModifierEntry.CetchUpObject);
             foreach (ICetchLine line in innerLines)
             {
-                line.Remove(cetchUpObject);
+                line.Remove(cetchModifierEntry);
             }
         }
     }

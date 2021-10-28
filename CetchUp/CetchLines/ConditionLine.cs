@@ -7,13 +7,13 @@ namespace CetchUp.CetchLines
     {
         private List<Condition> conditions = new List<Condition>();
 
-        public ConditionLine(string line, List<ICetchLine> lines) : base(lines)
+        public ConditionLine(string line, List<ICetchLine> lines, CetchModifier cetchModifier) : base(lines)
         {
             line = line.Substring(3);
             while (true)
             {
                 int nextStop = line.IndexOfAny(new char[] { ';', '&' });
-                conditions.Add(new Condition(line.Substring(0, nextStop)));
+                conditions.Add(new Condition(line.Substring(0, nextStop), cetchModifier));
                 line = line.Substring(nextStop);
                 if (line.StartsWith("&&"))
                 {
@@ -24,51 +24,56 @@ namespace CetchUp.CetchLines
             }
         }
 
-        public void JoinObject(CetchUpObject cetchUpObject)
+        public void JoinObject(CetchModifierEntry cetchModifierEntry)
         {
             foreach (Condition condition in conditions)
             {
-                AddEventToValue(cetchUpObject, condition.firstValue);
-                AddEventToValue(cetchUpObject, condition.secondValue);
+                AddEventToValue(cetchModifierEntry, condition.firstValue);
+                AddEventToValue(cetchModifierEntry, condition.secondValue);
             }
-            CheckConditionsForObject(cetchUpObject);
+            CheckConditionsForObject(cetchModifierEntry);
         }
 
-        public void CheckConditionsForObject(CetchUpObject cetchUpObject)
+        public void CheckConditionsForObject(CetchModifierEntry cetchModifierEntry)
         {
             bool conditionsMet = true;
             foreach (Condition condition in conditions)
             {
 
-                if (!condition.IsConditionMet(cetchUpObject)) { conditionsMet = false; }
+                if (!condition.IsConditionMet(cetchModifierEntry)) { conditionsMet = false; }
             }
 
             if (conditionsMet)
             {
-                JoinInnerLines(cetchUpObject);
+                JoinInnerLines(cetchModifierEntry);
             }
             else
             {
-                RemoveInnerLines(cetchUpObject);
+                RemoveInnerLines(cetchModifierEntry);
             }
         }
 
-        private void AddEventToValue(CetchUpObject cetchUpObject, IEquationElement valueElement)
+        private void AddEventToValue(CetchModifierEntry cetchModifierEntry, IEquationElement valueElement)
         {
             if (valueElement is EEvariable)
             {
-                cetchUpObject.GetCetchValue(((EEvariable)valueElement).variableName).changed += OnRelevantValueChanged;
+                cetchModifierEntry.CetchUpObject.GetCetchValue(((EEvariable)valueElement).variableName).changed
+                += OnRelevantValueChanged;
+            }
+            if (valueElement is EElocalVariable)
+            {
+                cetchModifierEntry.GetCetchValue(((EElocalVariable)valueElement).variableName).changed += OnRelevantValueChanged;
             }
         }
 
-        public void Remove(CetchUpObject cetchUpObject)
+        public void Remove(CetchModifierEntry cetchModifierEntry)
         {
-            RemoveInnerLines(cetchUpObject);
+            RemoveInnerLines(cetchModifierEntry);
         }
 
         public void OnRelevantValueChanged(object sender, CetchValue.ChangedEventArgs args)
         {
-            CheckConditionsForObject(args.cetchUpObject);
+            CheckConditionsForObject(args.cetchModifierEntry);
         }
     }
 }

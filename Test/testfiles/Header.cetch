@@ -1,7 +1,5 @@
-#bigBoyCetificate =0;
-#maxHealth =5?1;
-#smellResistance =2?1;
-#endurance =5;
+smellResistance = 2;
+endurance =5;
 maxHealth = endurance * 2;
 if:endurance>=10;
     bigBoyCetificate = 1;

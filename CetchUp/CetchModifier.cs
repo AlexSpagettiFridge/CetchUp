@@ -45,36 +45,31 @@ namespace CetchUp
                 }
                 if (Regex.IsMatch(line, "^if:.*[<>=]{1,2}.*$"))
                 {
-                    result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
-                    continue;
-                }
-                if (Regex.IsMatch(line, "^#.*$"))
-                {
-                    result.Add(new InitializeLine(line));
+                    result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData), this));
                     continue;
                 }
                 if (Regex.IsMatch(line, "^.*[=%].*$"))
                 {
-                    result.Add(new EquationLine(line));
+                    result.Add(new EquationLine(line, this));
                     continue;
                 }
             }
             return result;
         }
 
-        public void ModifyCetchObject(CetchUpObject cetchUpObject)
+        public void ModifyCetchObject(CetchModifierEntry cetchModifierEntry)
         {
             foreach (ICetchLine line in lines)
             {
-                line.JoinObject(cetchUpObject);
+                line.JoinObject(cetchModifierEntry);
             }
         }
 
-        public void RemoveFromCetchObject(CetchUpObject cetchUpObject)
+        public void RemoveFromCetchObject(CetchModifierEntry cetchModifierEntry)
         {
             foreach (ICetchLine line in lines)
             {
-                line.Remove(cetchUpObject);
+                line.Remove(cetchModifierEntry);
             }
         }
     }

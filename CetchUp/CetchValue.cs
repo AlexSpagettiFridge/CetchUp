@@ -6,12 +6,12 @@ namespace CetchUp
 {
     public class CetchValue
     {
+        private readonly CetchUpObject cetchUpObject;
         private readonly string name;
-        private CetchUpObject cetchUpObject;
         private float baseValue;
         private float value = 0;
         private float multiplier;
-        private Dictionary<EquationLine, float> valueMods = new Dictionary<EquationLine, float>();
+        private List<ValueModEntry> valueMods = new List<ValueModEntry>();
 
         public string Name => name;
         public float Total => (baseValue + value) * multiplier;
@@ -24,67 +24,94 @@ namespace CetchUp
             set
             {
                 baseValue = value;
-                if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
+                if (changed != null) { changed.Invoke(this, new ChangedEventArgs(null, Total)); }
             }
         }
 
         public CetchValue(CetchUpObject cetchUpObject, string name, float value, float multiplier = 1)
         {
-            this.name = name;
             this.cetchUpObject = cetchUpObject;
+            this.name = name;
             baseValue = value;
             this.multiplier = multiplier;
         }
 
+        private ValueModEntry GetValueModEntry(EquationLine equation)
+        {
+            foreach (ValueModEntry entry in valueMods)
+            {
+                if (entry.equation == equation)
+                {
+                    return entry;
+                }
+            }
+            throw new KeyNotFoundException(equation.ToString());
+        }
+
         internal void ModifyValue(EquationLine modV)
         {
-            float modVValue = modV.CalculateValue(cetchUpObject);
+            ValueModEntry entry = GetValueModEntry(modV);
+            float modVValue = modV.CalculateValue(entry.origin);
             if (modV.IsMultiplier)
             {
-                multiplier -= valueMods[modV];
+                multiplier -= entry.value;
                 multiplier += modVValue;
             }
             else
             {
-                value -= valueMods[modV];
+                value -= entry.value;
                 value += modVValue;
             }
-            valueMods[modV] = modVValue;
-            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
+            entry.value = modVValue;
+            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(entry.origin, Total)); }
         }
 
-        internal void AddModedValue(EquationLine modedValue)
+        internal void AddModedValue(EquationLine equation, CetchModifierEntry cetchModifierEntry)
         {
-            valueMods.Add(modedValue, 0);
-            modedValue.removed += OnModedValueRemoved;
+            valueMods.Add(new ValueModEntry(equation, cetchModifierEntry, 0));
+            equation.removed += OnModedValueRemoved;
         }
 
         private void OnModedValueRemoved(object sender, EquationLine modedValue)
         {
+            ValueModEntry entry = GetValueModEntry(modedValue);
             if (modedValue.IsMultiplier)
             {
-                multiplier -= valueMods[modedValue];
+                multiplier -= entry.value;
             }
             else
             {
-                value -= valueMods[modedValue];
+                value -= entry.value;
             }
             modedValue.removed -= OnModedValueRemoved;
-            valueMods.Remove(modedValue);
-            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
+            valueMods.Remove(entry);
+            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(entry.origin, Total)); }
         }
 
         public class ChangedEventArgs : EventArgs
         {
             public float newValue;
-            public CetchUpObject cetchUpObject;
+            public CetchModifierEntry cetchModifierEntry;
 
-            public ChangedEventArgs(CetchUpObject cetchUpObject, float newValue)
+            public ChangedEventArgs(CetchModifierEntry cetchModifierEntry, float newValue)
             {
-                this.cetchUpObject = cetchUpObject;
+                this.cetchModifierEntry = cetchModifierEntry;
                 this.newValue = newValue;
             }
         }
 
+        private class ValueModEntry
+        {
+            public EquationLine equation;
+            public CetchModifierEntry origin;
+            public float value;
+
+            public ValueModEntry(EquationLine equation, CetchModifierEntry origin, float value)
+            {
+                this.equation = equation;
+                this.origin = origin;
+                this.value = value;
+            }
+        }
     }
 }

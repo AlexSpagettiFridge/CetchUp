@@ -9,37 +9,41 @@ namespace CetchUp.CetchLines
     {
         private bool isMultiplier = false;
         private List<IEquationElement> equation = new List<IEquationElement>();
+        private bool isValueLocal = false;
         private string modifiedValue;
 
         public bool IsMultiplier => isMultiplier;
         public event EventHandler<EquationLine> removed;
 
-        public EquationLine(string cetchLine)
+        public EquationLine(string cetchLine, CetchModifier cetchModifier)
         {
-            PopulateFromCetchLine(cetchLine);
+            PopulateFromCetchLine(cetchLine, cetchModifier);
         }
 
-        public void JoinObject(CetchUpObject cetchUpObject)
+        public void JoinObject(CetchModifierEntry cetchModifierEntry)
         {
-            CetchValue cetchValue = cetchUpObject.GetCetchValue(modifiedValue);
-            cetchValue.AddModedValue(this);
+            CetchValueCollection valueParent = cetchModifierEntry.CetchUpObject;
+            if (isValueLocal) { valueParent = cetchModifierEntry; }
+
+            CetchValue cetchValue = valueParent.GetCetchValue(modifiedValue);
+            cetchValue.AddModedValue(this, cetchModifierEntry);
             cetchValue.ModifyValue(this);
-            foreach (CetchValue depVariable in GetDependentValues(cetchUpObject))
+            foreach (CetchValue depVariable in GetDependentValues(cetchModifierEntry))
             {
                 depVariable.changed += OnVariableChanged;
             }
         }
 
-        public void Remove(CetchUpObject cetchUpObject)
+        public void Remove(CetchModifierEntry cetchModifierEntry)
         {
-            foreach (CetchValue depVariable in GetDependentValues(cetchUpObject))
+            foreach (CetchValue depVariable in GetDependentValues(cetchModifierEntry))
             {
                 depVariable.changed -= OnVariableChanged;
             }
             if (removed != null) { removed.Invoke(this, this); }
         }
 
-        private void PopulateFromCetchLine(string line, bool preShortened = false)
+        private void PopulateFromCetchLine(string line, CetchModifier cetchModifier, bool preShortened = false)
         {
             if (!preShortened)
             {
@@ -61,7 +65,7 @@ namespace CetchUp.CetchLines
 
                 if (frontArea != "")
                 {
-                    equation.Add(EquationHelper.ParseValueElement(frontArea));
+                    equation.Add(EquationHelper.ParseValueElement(frontArea, cetchModifier));
                 }
                 char currentSymbol = line.ToCharArray()[nextSymbolIndex];
                 switch (currentSymbol)
@@ -84,16 +88,16 @@ namespace CetchUp.CetchLines
             }
         }
 
-        public float CalculateValue(CetchUpObject cetchUpObject)
+        public float CalculateValue(CetchModifierEntry cetchModifierEntry)
         {
             int i = -1;
-            return CalculateValue(cetchUpObject, ref i);
+            return CalculateValue(cetchModifierEntry, ref i);
         }
 
-        public float CalculateValue(CetchUpObject cetchUpObject, ref int i)
+        public float CalculateValue(CetchModifierEntry cetchModifierEntry, ref int i)
         {
             i++;
-            float value = EquationHelper.GetValueFromValueElement(cetchUpObject, equation[i]);
+            float value = EquationHelper.GetValueFromValueElement(cetchModifierEntry, equation[i]);
             EEmodifier lastMod = new EEmodifier(EEmodifier.ModifierType.Add);
             while ((i++) < equation.Count - 1)
             {
@@ -107,16 +111,16 @@ namespace CetchUp.CetchLines
                 {
                     if (((EEbracket)equation[i]).isStart)
                     {
-                        calcValue = CalculateValue(cetchUpObject, ref i);
+                        calcValue = CalculateValue(cetchModifierEntry, ref i);
                     }
                     else
                     {
                         return value;
                     }
                 }
-                if (equation[i] is EEconstant || equation[i] is EEvariable)
+                if (equation[i] is EEconstant || equation[i] is EEvariable || equation[i] is EElocalVariable)
                 {
-                    calcValue = EquationHelper.GetValueFromValueElement(cetchUpObject, equation[i]);
+                    calcValue = EquationHelper.GetValueFromValueElement(cetchModifierEntry, equation[i]);
                 }
                 switch (lastMod.modtype)
                 {
@@ -129,7 +133,7 @@ namespace CetchUp.CetchLines
             return value;
         }
 
-        private List<CetchValue> GetDependentValues(CetchUpObject cetchUpObject)
+        private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)
         {
             List<CetchValue> result = new List<CetchValue>();
             foreach (IEquationElement element in equation)
@@ -137,7 +141,12 @@ namespace CetchUp.CetchLines
                 if (element is EEvariable)
                 {
                     EEvariable depVar = (EEvariable)element;
-                    result.Add(cetchUpObject.GetCetchValue(depVar.variableName));
+                    result.Add(cetchModifierEntry.CetchUpObject.GetCetchValue(depVar.variableName));
+                }
+                if (element is EElocalVariable)
+                {
+                    EElocalVariable depLocVar = (EElocalVariable)element;
+                    result.Add(cetchModifierEntry.GetCetchValue(depLocVar.variableName));
                 }
             }
             return result;
@@ -145,7 +154,11 @@ namespace CetchUp.CetchLines
 
         public void OnVariableChanged(object sender, CetchValue.ChangedEventArgs args)
         {
-            args.cetchUpObject.GetCetchValue(modifiedValue).ModifyValue(this);
+            CetchValueCollection valueCollection = args.cetchModifierEntry;
+            if (!isValueLocal){
+                valueCollection = args.cetchModifierEntry.CetchUpObject;
+            }
+            valueCollection.GetCetchValue(modifiedValue).ModifyValue(this);
         }
     }
 }

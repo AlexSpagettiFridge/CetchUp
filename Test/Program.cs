@@ -18,7 +18,7 @@ namespace Test
             WriteCurrentStats(cetchUpObject);
             cetchUpObject.ApplyModifier(repository["Bla"]);
             WriteCurrentStats(cetchUpObject);
-            cetchUpObject.RemoveModifier(repository["Bla"]);
+            cetchUpObject.TryRemoveModifier(repository["Bla"]);
             WriteCurrentStats(cetchUpObject);
 
             Console.WriteLine("Cetchy:");

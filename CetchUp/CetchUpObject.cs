@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 namespace CetchUp
 {
-    public class CetchUpObject
+    public class CetchUpObject : CetchValueCollection
     {
-        private Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();
-        private List<CetchModifier> modifiers = new List<CetchModifier>();
+        private List<CetchModifierEntry> modifierEntries = new List<CetchModifierEntry>();
         public event EventHandler<ValueChangedEventArgs> valueChanged;
 
         public CetchModifier MakeModifer()
@@ -25,53 +24,23 @@ namespace CetchUp
 
         public void ApplyModifier(CetchModifier modifier)
         {
-            modifiers.Add(modifier);
-            modifier.ModifyCetchObject(this);
+            CetchModifierEntry entry = new CetchModifierEntry(this, modifier);
+            modifierEntries.Add(entry);
+            modifier.ModifyCetchObject(entry);
         }
 
-        public void RemoveModifier(CetchModifier modifier)
+        public bool TryRemoveModifier(CetchModifier modifier)
         {
-            modifier.RemoveFromCetchObject(this);
-            modifiers.Remove(modifier);
-        }
-
-        public void AddNewValue(string name, float defaultValue = 0, float defaultModifier = 1)
-        {
-            CetchValue value = new CetchValue(this, name, defaultValue, defaultModifier);
-            values.Add(name, value);
-            value.changed += OnValueChanged;
-        }
-
-        public float GetValue(string valueName)
-        {
-            try
+            foreach (CetchModifierEntry entry in modifierEntries)
             {
-                return values[valueName].Total;
-            }
-            catch (KeyNotFoundException e)
-            {
-                throw new Exception($"The CetchUpObject does not contain {e.Data["Key"]}");
-            }
-        }
-
-        public bool TryGetValue(string valueName, out float value)
-        {
-            value = 0;
-            if (values.ContainsKey(valueName))
-            {
-                value = values[valueName].Total;
-                return true;
+                if (entry.CetchModifier == modifier)
+                {
+                    modifier.RemoveFromCetchObject(entry);
+                    modifierEntries.Remove(entry);
+                    return true;
+                }
             }
             return false;
-        }
-
-        public CetchValue GetCetchValue(string valueName)
-        {
-            if (!values.ContainsKey(valueName))
-            {
-                return null;
-            }
-            return values[valueName];
         }
 
         private void OnValueChanged(object sender, CetchValue.ChangedEventArgs args)

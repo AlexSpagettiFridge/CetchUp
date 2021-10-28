@@ -2,7 +2,7 @@ namespace CetchUp
 {
     internal interface ICetchLine
     {
-        void JoinObject(CetchUpObject cetchUpObject);
-        void Remove(CetchUpObject cetchUpObject);
+        void JoinObject(CetchModifierEntry cetchModifierEntry);
+        void Remove(CetchModifierEntry cetchModifierEntry);
     }
 }

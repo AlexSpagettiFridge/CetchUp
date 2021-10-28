@@ -7,20 +7,20 @@ namespace CetchUp
         public IEquationElement firstValue, secondValue;
         public EEcomparison comparer;
 
-        public Condition(string line)
+        public Condition(string line, CetchModifier cetchModifier)
         {
             int compIndex = line.IndexOfAny(new char[] { '=', '<', '>' });
-            firstValue = EquationHelper.ParseValueElement(line.Substring(0, compIndex));
+            firstValue = EquationHelper.ParseValueElement(line.Substring(0, compIndex), cetchModifier);
             line = line.Substring(compIndex);
             int compLenght = line.ToCharArray()[1] == '=' ? 2 : 1;
             comparer = new EEcomparison(line.Substring(0, compLenght));
-            secondValue = EquationHelper.ParseValueElement(line.Substring(compLenght));
+            secondValue = EquationHelper.ParseValueElement(line.Substring(compLenght), cetchModifier);
         }
 
-        public bool IsConditionMet(CetchUpObject cetchUpObject)
+        public bool IsConditionMet(CetchModifierEntry cetchModifierEntry)
         {
-            float a = EquationHelper.GetValueFromValueElement(cetchUpObject, firstValue);
-            float b = EquationHelper.GetValueFromValueElement(cetchUpObject, secondValue);
+            float a = EquationHelper.GetValueFromValueElement(cetchModifierEntry, firstValue);
+            float b = EquationHelper.GetValueFromValueElement(cetchModifierEntry, secondValue);
             switch (comparer.comparisonType)
             {
 
