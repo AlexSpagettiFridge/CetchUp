@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using CetchUp.EquationElements;
 
 namespace CetchUp.CetchLines
@@ -55,6 +56,7 @@ namespace CetchUp.CetchLines
                 isMultiplier = true;
             }
             modifiedValue = line.Substring(0, equalSymbolIndex);
+            isValueLocal = Regex.IsMatch(modifiedValue,"^#.*$");
             line = line.Substring(equalSymbolIndex + 1);
 
             bool loop = true;

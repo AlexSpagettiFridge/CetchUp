@@ -1,6 +1,7 @@
 smellResistance = 2;
 endurance =5;
 maxHealth = endurance * 2;
+coolness = 2;
 if:endurance>=10;
     bigBoyCetificate = 1;
 end;
