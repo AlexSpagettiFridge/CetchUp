@@ -6,7 +6,7 @@ namespace CetchUp
     public class CetchUpObject : CetchValueCollection
     {
         private List<CetchModifierEntry> modifierEntries = new List<CetchModifierEntry>();
-        public event EventHandler<ValueChangedEventArgs> valueChanged;
+        private event EventHandler<LocalValueChangedEventArgs> localValueChanged;
 
         public CetchModifier MakeModifer()
         {
@@ -27,6 +27,7 @@ namespace CetchUp
             CetchModifierEntry entry = new CetchModifierEntry(this, modifier);
             modifierEntries.Add(entry);
             modifier.ModifyCetchObject(entry);
+            entry.valueChanged += OnLocalValueChanged;
             return entry;
         }
 
@@ -38,28 +39,38 @@ namespace CetchUp
                 {
                     modifier.RemoveFromCetchObject(entry);
                     modifierEntries.Remove(entry);
+                    entry.valueChanged -= OnLocalValueChanged;
                     return true;
                 }
             }
             return false;
         }
 
-        private void OnValueChanged(object sender, CetchValue.ChangedEventArgs args)
+        public void RemoveModifierEntry(CetchModifierEntry entry)
         {
-            if (valueChanged != null)
+            if (!modifierEntries.Contains(entry)) { return; }
+
+        }
+
+        private void OnLocalValueChanged(object sender, ValueChangedEventArgs args)
+        {
+            if (localValueChanged != null)
             {
-                valueChanged.Invoke(this, new ValueChangedEventArgs((CetchValue)sender, args.newValue));
+                localValueChanged.Invoke(this, new LocalValueChangedEventArgs((CetchModifierEntry)sender,
+                args.changedValue, args.newValue));
             }
         }
 
-        public class ValueChangedEventArgs
+        public class LocalValueChangedEventArgs : EventArgs
         {
-            public CetchValue changedValue;
+            public CetchModifierEntry cetchModifierEntry;
+            public CetchValue cetchValue;
             public float newValue;
 
-            public ValueChangedEventArgs(CetchValue changedValue, float newValue)
+            public LocalValueChangedEventArgs(CetchModifierEntry cetchModifierEntry, CetchValue cetchValue, float newValue)
             {
-                this.changedValue = changedValue;
+                this.cetchModifierEntry = cetchModifierEntry;
+                this.cetchValue = cetchValue;
                 this.newValue = newValue;
             }
         }

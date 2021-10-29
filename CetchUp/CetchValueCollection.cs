@@ -6,6 +6,7 @@ namespace CetchUp
     public abstract class CetchValueCollection
     {
         internal Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();
+        public event EventHandler<ValueChangedEventArgs> valueChanged;
 
         public virtual float GetValue(string valueName, bool initWhenUnavailable = true)
         {
@@ -31,6 +32,26 @@ namespace CetchUp
 
             }
             return values[valueName];
+        }
+
+        private void OnValueChanged(object sender, CetchValue.ChangedEventArgs args)
+        {
+            if (valueChanged != null)
+            {
+                valueChanged.Invoke(this, new ValueChangedEventArgs((CetchValue)sender, args.newValue));
+            }
+        }
+
+        public class ValueChangedEventArgs : EventArgs
+        {
+            public CetchValue changedValue;
+            public float newValue;
+
+            public ValueChangedEventArgs(CetchValue changedValue, float newValue)
+            {
+                this.changedValue = changedValue;
+                this.newValue = newValue;
+            }
         }
     }
 }
