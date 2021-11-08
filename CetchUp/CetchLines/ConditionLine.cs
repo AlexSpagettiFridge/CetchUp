@@ -60,10 +60,6 @@ namespace CetchUp.CetchLines
                 cetchModifierEntry.CetchUpObject.GetCetchValue(((EEvariable)valueElement).variableName).changed
                 += OnRelevantValueChanged;
             }
-            if (valueElement is EElocalVariable)
-            {
-                cetchModifierEntry.GetCetchValue(((EElocalVariable)valueElement).variableName).changed += OnRelevantValueChanged;
-            }
         }
 
         public void Remove(CetchModifierEntry cetchModifierEntry)

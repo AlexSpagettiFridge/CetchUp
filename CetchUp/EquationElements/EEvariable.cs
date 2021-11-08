@@ -1,12 +1,26 @@
+using System.Text.RegularExpressions;
+
 namespace CetchUp.EquationElements
 {
-    internal struct EEvariable : IEquationElement
+    public struct EEvariable : IEquationElement
     {
-        public readonly string variableName;
+        public string name;
+        public bool isNegative;
 
-        public EEvariable(string variableName)
+        public EEvariable(string line)
         {
-            this.variableName = variableName;
+            isNegative = Regex.IsMatch(line, "^-.+$");
+            if (isNegative) { line = line.Substring(1); }
+            name = line;
+        }
+
+        public float GetValue(CetchModifierEntry cetchModifierEntry)
+        {
+            if (name.StartsWith("#"))
+            {
+                return cetchModifierEntry.GetValue(name) * (isNegative ? -1 : 1);
+            }
+            return cetchModifierEntry.CetchUpObject.GetValue(name) * (isNegative ? -1 : 1);
         }
     }
 }
