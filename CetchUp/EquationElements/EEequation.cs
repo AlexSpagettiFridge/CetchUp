@@ -22,11 +22,10 @@ namespace CetchUp.EquationElements
 
         private void Init(string line, ref List<string> dependencies)
         {
-            line = Regex.Replace(line, @"^\(|\)$", "");
-            string[] sides = Regex.Split(line, @"\(.*\)|[*\/+-]|-?[A-z_]+|-?[0-9\.]+");
-            foreach (string match in sides)
+            MatchCollection sides = Regex.Matches(line, @"\(.*\)|[*\/+-]|-?[A-z_]+|-?[0-9\.]+");
+            foreach (Match match in sides)
             {
-                IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match, ref dependencies);
+                IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match.Value, ref dependencies);
                 elements.Add(equationElement);
                 if (equationElement is EEvariable)
                 {
@@ -42,11 +41,12 @@ namespace CetchUp.EquationElements
                     if (((EEsymbol)elements[i]).symbol == '*' || ((EEsymbol)elements[i]).symbol == '/')
                     {
                         i--;
-                        ArrayList subEquation = elements.GetRange(i, 3);
+                        ArrayList subEquation = (ArrayList)elements.GetRange(i, 3).Clone();
                         elements[i] = new EEequation(subEquation);
                         elements.RemoveRange(i + 1, 2);
                     }
                 }
+                i++;
             }
         }
 

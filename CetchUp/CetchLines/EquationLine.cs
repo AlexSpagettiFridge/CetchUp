@@ -18,10 +18,13 @@ namespace CetchUp.CetchLines
 
         public EquationLine(string cetchLine, CetchModifier cetchModifier)
         {
-            cetchLine = Regex.Replace(cetchLine, @"[\s]", "");
-            modifiedValue = Regex.Match(cetchLine, "^.*(?==)").Value;
+            cetchLine = Regex.Replace(cetchLine, @"[\s;]", "");
+            GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%])(.*)").Groups;
+
+            modifiedValue = groups[1].Value;
+            isMultiplier = groups[2].Value == "%";
             dependencies = new List<string>();
-            equation = new EEequation(Regex.Match(cetchLine, @"=\K.*(?:;$)").Value, ref dependencies);
+            equation = new EEequation(groups[3].Value, ref dependencies);
         }
 
         public void JoinObject(CetchModifierEntry cetchModifierEntry)
@@ -47,16 +50,18 @@ namespace CetchUp.CetchLines
             if (removed != null) { removed.Invoke(this, this); }
         }
 
-        public float Calculate(CetchModifierEntry cetchModifierEntry){
+        public float Calculate(CetchModifierEntry cetchModifierEntry)
+        {
             return equation.GetValue(cetchModifierEntry);
         }
 
         private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)
         {
             List<CetchValue> result = new List<CetchValue>();
-            foreach(string dep in dependencies)
+            foreach (string dep in dependencies)
             {
-                if (dep.StartsWith("#")){
+                if (dep.StartsWith("#"))
+                {
                     cetchModifierEntry.GetValue(dep);
                     continue;
                 }
