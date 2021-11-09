@@ -47,6 +47,10 @@ namespace CetchUp.CetchLines
             if (removed != null) { removed.Invoke(this, this); }
         }
 
+        public float Calculate(CetchModifierEntry cetchModifierEntry){
+            return equation.GetValue(cetchModifierEntry);
+        }
+
         private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)
         {
             List<CetchValue> result = new List<CetchValue>();

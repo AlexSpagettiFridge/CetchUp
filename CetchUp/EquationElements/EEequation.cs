@@ -8,17 +8,29 @@ namespace CetchUp.EquationElements
     {
         public ArrayList elements = new ArrayList();
 
-        public EEequation(string line, ref List<string> dependecies)
+        public EEequation(string line)
+        {
+            List<string> unnecessaryList = new List<string>();
+            Init(line, ref unnecessaryList);
+        }
+
+        public EEequation(string line, ref List<string> dependencies)
+        {
+            Init(line, ref dependencies);
+        }
+
+
+        private void Init(string line, ref List<string> dependencies)
         {
             line = Regex.Replace(line, @"^\(|\)$", "");
             string[] sides = Regex.Split(line, @"\(.*\)|[*\/+-]|-?[A-z_]+|-?[0-9\.]+");
             foreach (string match in sides)
             {
-                IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match, ref dependecies);
+                IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match, ref dependencies);
                 elements.Add(equationElement);
                 if (equationElement is EEvariable)
                 {
-                    dependecies.Add(((EEvariable)equationElement).name);
+                    dependencies.Add(((EEvariable)equationElement).name);
                 }
             }
             int i = 0;

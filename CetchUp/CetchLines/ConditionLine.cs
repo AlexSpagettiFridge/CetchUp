@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using CetchUp.EquationElements;
 
 namespace CetchUp.CetchLines
@@ -6,30 +7,25 @@ namespace CetchUp.CetchLines
     internal class ConditionLine : ScopeLine, ICetchLine
     {
         private List<Condition> conditions = new List<Condition>();
+        private List<string> depedencies = new List<string>();
 
-        public ConditionLine(string line, List<ICetchLine> lines, CetchModifier cetchModifier) : base(lines)
+        public ConditionLine(string line, List<ICetchLine> lines) : base(lines)
         {
             line = line.Substring(3);
-            while (true)
+            foreach (string conditionString in Regex.Split(line, "&&"))
             {
-                int nextStop = line.IndexOfAny(new char[] { ';', '&' });
-                conditions.Add(new Condition(line.Substring(0, nextStop), cetchModifier));
-                line = line.Substring(nextStop);
-                if (line.StartsWith("&&"))
-                {
-                    line = line.Substring(0, 2);
-                    continue;
-                }
-                break;
+                conditions.Add(new Condition(conditionString, ref depedencies));
             }
         }
 
         public void JoinObject(CetchModifierEntry cetchModifierEntry)
         {
-            foreach (Condition condition in conditions)
-            {
-                AddEventToValue(cetchModifierEntry, condition.firstValue);
-                AddEventToValue(cetchModifierEntry, condition.secondValue);
+            foreach(string dependency in depedencies){
+                if (dependency.StartsWith("#"))
+                {
+                    cetchModifierEntry.GetCetchValue(dependency).changed += OnRelevantValueChanged;
+                }
+                cetchModifierEntry.CetchUpObject.GetCetchValue(dependency).changed += OnRelevantValueChanged;
             }
             CheckConditionsForObject(cetchModifierEntry);
         }
@@ -50,15 +46,6 @@ namespace CetchUp.CetchLines
             else
             {
                 RemoveInnerLines(cetchModifierEntry);
-            }
-        }
-
-        private void AddEventToValue(CetchModifierEntry cetchModifierEntry, IEquationElement valueElement)
-        {
-            if (valueElement is EEvariable)
-            {
-                cetchModifierEntry.CetchUpObject.GetCetchValue(((EEvariable)valueElement).variableName).changed
-                += OnRelevantValueChanged;
             }
         }
 

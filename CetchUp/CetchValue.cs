@@ -51,7 +51,7 @@ namespace CetchUp
         internal void ModifyValue(EquationLine modV)
         {
             ValueModEntry entry = GetValueModEntry(modV);
-            float modVValue = ;
+            float modVValue = modV.Calculate(entry.origin);
             if (modV.IsMultiplier)
             {
                 multiplier -= entry.value;
