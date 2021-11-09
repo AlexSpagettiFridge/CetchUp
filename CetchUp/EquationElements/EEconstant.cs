@@ -1,12 +1,31 @@
+using System.Text.RegularExpressions;
+
 namespace CetchUp.EquationElements
 {
     internal struct EEconstant : IEquationElement
     {
-        public readonly float constantValue;
+        public float value;
+        public bool isNegative;
 
-        public EEconstant(float constantValue)
+        public EEconstant(string line)
         {
-            this.constantValue = constantValue;
+            isNegative = Regex.IsMatch(line, "^-.+$");
+            if (isNegative) { line = line.Substring(1); }
+            value = float.Parse(line);
+
         }
+
+        public EEconstant(float value)
+        {
+            isNegative = false;
+            this.value = value;
+        }
+
+        public float GetValue(CetchModifierEntry cetchModifierEntry)
+        {
+            return value * (isNegative ? -1 : 1);
+        }
+
+        public static EEconstant Zero => new EEconstant(0);
     }
 }

@@ -45,7 +45,7 @@ namespace CetchUp
                 }
                 if (Regex.IsMatch(line, "^if:.*[<>=]{1,2}.*$"))
                 {
-                    result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData), this));
+                    result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
                     continue;
                 }
                 if (Regex.IsMatch(line, "^.*[=%].*$"))

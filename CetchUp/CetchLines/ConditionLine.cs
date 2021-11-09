@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using CetchUp.EquationElements;
 
 namespace CetchUp.CetchLines
@@ -6,30 +7,22 @@ namespace CetchUp.CetchLines
     internal class ConditionLine : ScopeLine, ICetchLine
     {
         private List<Condition> conditions = new List<Condition>();
+        private List<string> dependencies = new List<string>();
 
-        public ConditionLine(string line, List<ICetchLine> lines, CetchModifier cetchModifier) : base(lines)
+        public ConditionLine(string line, List<ICetchLine> lines) : base(lines)
         {
             line = line.Substring(3);
-            while (true)
+            foreach (string conditionString in Regex.Split(line, "&&"))
             {
-                int nextStop = line.IndexOfAny(new char[] { ';', '&' });
-                conditions.Add(new Condition(line.Substring(0, nextStop), cetchModifier));
-                line = line.Substring(nextStop);
-                if (line.StartsWith("&&"))
-                {
-                    line = line.Substring(0, 2);
-                    continue;
-                }
-                break;
+                conditions.Add(new Condition(conditionString, ref dependencies));
             }
         }
 
         public void JoinObject(CetchModifierEntry cetchModifierEntry)
         {
-            foreach (Condition condition in conditions)
+            foreach (CetchValue dependency in GetDependentValues(cetchModifierEntry))
             {
-                AddEventToValue(cetchModifierEntry, condition.firstValue);
-                AddEventToValue(cetchModifierEntry, condition.secondValue);
+                dependency.changed += OnRelevantValueChanged;
             }
             CheckConditionsForObject(cetchModifierEntry);
         }
@@ -39,7 +32,6 @@ namespace CetchUp.CetchLines
             bool conditionsMet = true;
             foreach (Condition condition in conditions)
             {
-
                 if (!condition.IsConditionMet(cetchModifierEntry)) { conditionsMet = false; }
             }
 
@@ -53,19 +45,6 @@ namespace CetchUp.CetchLines
             }
         }
 
-        private void AddEventToValue(CetchModifierEntry cetchModifierEntry, IEquationElement valueElement)
-        {
-            if (valueElement is EEvariable)
-            {
-                cetchModifierEntry.CetchUpObject.GetCetchValue(((EEvariable)valueElement).variableName).changed
-                += OnRelevantValueChanged;
-            }
-            if (valueElement is EElocalVariable)
-            {
-                cetchModifierEntry.GetCetchValue(((EElocalVariable)valueElement).variableName).changed += OnRelevantValueChanged;
-            }
-        }
-
         public void Remove(CetchModifierEntry cetchModifierEntry)
         {
             RemoveInnerLines(cetchModifierEntry);
@@ -74,6 +53,21 @@ namespace CetchUp.CetchLines
         public void OnRelevantValueChanged(object sender, CetchValue.ChangedEventArgs args)
         {
             CheckConditionsForObject(args.cetchModifierEntry);
+        }
+
+        private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)
+        {
+            List<CetchValue> result = new List<CetchValue>();
+            foreach (string dep in dependencies)
+            {
+                if (dep.StartsWith("#"))
+                {
+                    result.Add(cetchModifierEntry.GetCetchValue(dep));
+                    continue;
+                }
+                result.Add(cetchModifierEntry.CetchUpObject.GetCetchValue(dep));
+            }
+            return result;
         }
     }
 }

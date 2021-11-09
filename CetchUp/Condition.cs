@@ -1,44 +1,51 @@
+using System.Text.RegularExpressions;
 using CetchUp.EquationElements;
+using System;
+using System.Collections.Generic;
 
 namespace CetchUp
 {
     internal class Condition
     {
         public IEquationElement firstValue, secondValue;
-        public EEcomparison comparer;
+        public ComparisonType comparer;
 
-        public Condition(string line, CetchModifier cetchModifier)
+        public Condition(string line, ref List<string> dependencies)
         {
-            int compIndex = line.IndexOfAny(new char[] { '=', '<', '>' });
-            firstValue = EquationHelper.ParseValueElement(line.Substring(0, compIndex), cetchModifier);
-            line = line.Substring(compIndex);
-            int compLenght = line.ToCharArray()[1] == '=' ? 2 : 1;
-            comparer = new EEcomparison(line.Substring(0, compLenght));
-            secondValue = EquationHelper.ParseValueElement(line.Substring(compLenght), cetchModifier);
+            switch (Regex.Match(line, "<=|>=|==|<|>").Value)
+            {
+                case ">=": comparer = ComparisonType.GreaterEqual; break;
+                case "<=": comparer = ComparisonType.SmallerEqual; break;
+                case ">": comparer = ComparisonType.Greater; break;
+                case "<": comparer = ComparisonType.Smaller; break;
+                default: comparer = ComparisonType.Equal; break;
+            }
+            string[] parts = Regex.Split(line, "<=|>=|==|<|>");
+            if (parts.Length != 2)
+            {
+                throw new ArgumentException($"Cannot parse \"{line}\" as a comparison.\nIt has too many comparison symbols.");
+            }
+            firstValue = EquationHelper.CreateEquationElementFromLine(parts[0], ref dependencies);
+            secondValue = EquationHelper.CreateEquationElementFromLine(parts[1], ref dependencies);
         }
 
         public bool IsConditionMet(CetchModifierEntry cetchModifierEntry)
         {
-            float a = EquationHelper.GetValueFromValueElement(cetchModifierEntry, firstValue);
-            float b = EquationHelper.GetValueFromValueElement(cetchModifierEntry, secondValue);
-            switch (comparer.comparisonType)
+            float a = firstValue.GetValue(cetchModifierEntry);
+            float b = secondValue.GetValue(cetchModifierEntry);
+            switch (comparer)
             {
-
-                case EEcomparison.ComparisonType.greater:
-                    if (comparer.isInclusive)
-                    {
-                        return a >= b;
-                    }
-                    return a > b;
-                case EEcomparison.ComparisonType.smaller:
-                    if (comparer.isInclusive)
-                    {
-                        return a <= b;
-                    }
-                    return a > b;
-                default:
-                    return a == b;
+                case ComparisonType.GreaterEqual: return a >= b;
+                case ComparisonType.SmallerEqual: return a <= b;
+                case ComparisonType.Greater: return a > b;
+                case ComparisonType.Smaller: return a < b;
+                default: return a == b;
             }
+        }
+
+        public enum ComparisonType
+        {
+            Greater, Smaller, Equal, GreaterEqual, SmallerEqual
         }
     }
 }
