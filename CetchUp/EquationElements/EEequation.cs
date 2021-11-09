@@ -27,10 +27,6 @@ namespace CetchUp.EquationElements
             {
                 IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match.Value, ref dependencies);
                 elements.Add(equationElement);
-                if (equationElement is EEvariable)
-                {
-                    dependencies.Add(((EEvariable)equationElement).name);
-                }
             }
             int i = 0;
             if (elements.Count <= 3) { return; }

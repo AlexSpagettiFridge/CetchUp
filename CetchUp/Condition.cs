@@ -14,10 +14,10 @@ namespace CetchUp
         {
             switch (Regex.Match(line, "<=|>=|==|<|>").Value)
             {
-                case "<=": comparer = ComparisonType.SmallerEqual; break;
                 case ">=": comparer = ComparisonType.GreaterEqual; break;
-                case "<": comparer = ComparisonType.Smaller; break;
+                case "<=": comparer = ComparisonType.SmallerEqual; break;
                 case ">": comparer = ComparisonType.Greater; break;
+                case "<": comparer = ComparisonType.Smaller; break;
                 default: comparer = ComparisonType.Equal; break;
             }
             string[] parts = Regex.Split(line, "<=|>=|==|<|>");

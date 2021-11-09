@@ -62,10 +62,10 @@ namespace CetchUp.CetchLines
             {
                 if (dep.StartsWith("#"))
                 {
-                    cetchModifierEntry.GetValue(dep);
+                    result.Add(cetchModifierEntry.GetCetchValue(dep));
                     continue;
                 }
-                cetchModifierEntry.CetchUpObject.GetValue(dep);
+                result.Add(cetchModifierEntry.CetchUpObject.GetCetchValue(dep));
             }
             return result;
         }

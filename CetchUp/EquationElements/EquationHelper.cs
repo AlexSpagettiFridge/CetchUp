@@ -14,7 +14,7 @@ namespace CetchUp.EquationElements
             }
             if (Regex.IsMatch(line, "^[A-z_]*$"))
             {
-                return new EEvariable(line);
+                return new EEvariable(line, ref dependencies);
             }
             if (Regex.IsMatch(line, @"^[0-9\.]*$"))
             {

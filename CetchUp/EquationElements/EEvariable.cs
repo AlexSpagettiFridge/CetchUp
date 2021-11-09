@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
@@ -6,6 +7,11 @@ namespace CetchUp.EquationElements
     {
         public string name;
         public bool isNegative;
+
+        public EEvariable(string line, ref List<string> depedencies) : this(line)
+        {
+            depedencies.Add(name);
+        }
 
         public EEvariable(string line)
         {
