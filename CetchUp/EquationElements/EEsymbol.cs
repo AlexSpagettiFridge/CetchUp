@@ -9,6 +9,11 @@ namespace CetchUp.EquationElements
             symbol = line.ToCharArray()[0];
         }
 
+        public float GetValue()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public float GetValue(CetchModifierEntry cetchModifierEntry)
         {
             throw new System.NotImplementedException();

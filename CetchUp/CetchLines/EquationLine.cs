@@ -55,6 +55,11 @@ namespace CetchUp.CetchLines
             return equation.GetValue(cetchModifierEntry);
         }
 
+        public void ModifyByValue(float modifier)
+        {
+            equation.ModifyByValue(modifier);
+        }
+
         private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)
         {
             List<CetchValue> result = new List<CetchValue>();
@@ -83,6 +88,11 @@ namespace CetchUp.CetchLines
         public override string ToString()
         {
             return $"{modifiedValue}: {equation.ToString()}";
+        }
+
+        public void TryShorten()
+        {
+            equation.TryShorten();
         }
     }
 }

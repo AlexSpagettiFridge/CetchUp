@@ -20,6 +20,11 @@ namespace CetchUp.EquationElements
             name = line;
         }
 
+        public float GetValue()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public float GetValue(CetchModifierEntry cetchModifierEntry)
         {
             if (name.StartsWith("#"))

@@ -21,9 +21,13 @@ namespace CetchUp.EquationElements
             this.value = value;
         }
 
+        public float GetValue(){
+            return value * (isNegative ? -1 : 1);
+        }
+
         public float GetValue(CetchModifierEntry cetchModifierEntry)
         {
-            return value * (isNegative ? -1 : 1);
+            return GetValue();
         }
 
         public static EEconstant Zero => new EEconstant(0);

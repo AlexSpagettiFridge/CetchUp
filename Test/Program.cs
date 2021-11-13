@@ -31,6 +31,10 @@ namespace Test
             Console.WriteLine("--Modifier toString");
             Console.WriteLine(repository["Header"].ToString());
             Console.WriteLine(repository["Bla"].ToString());
+
+            Console.WriteLine(repository["ShortenEquations"]);
+            repository["ShortenEquations"].ModifyByValue(0.5f);
+            Console.WriteLine(repository["ShortenEquations"]);
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)
         {

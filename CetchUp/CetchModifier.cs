@@ -30,6 +30,17 @@ namespace CetchUp
             lines = GetLinesFromCetchData(ref cetchData);
         }
 
+        public void ModifyByValue(float value)
+        {
+            foreach (ICetchLine line in lines)
+            {
+                if (line is EquationLine)
+                {
+                    ((EquationLine)line).ModifyByValue(value);
+                }
+            }
+        }
+
         private List<ICetchLine> GetLinesFromCetchData(ref string cetchData)
         {
             List<ICetchLine> result = new List<ICetchLine>();
@@ -73,13 +84,24 @@ namespace CetchUp
             }
         }
 
+        public void TryShorten()
+        {
+            foreach (ICetchLine line in lines)
+            {
+                if (line is EquationLine)
+                {
+                    ((EquationLine)line).TryShorten();
+                }
+            }
+        }
+
         public override string ToString()
         {
             string result = "";
             foreach (ICetchLine line in lines)
             {
                 result += $"{line.ToString()}";
-                if (line != lines[lines.Count-1]) { result += "\n"; }
+                if (line != lines[lines.Count - 1]) { result += "\n"; }
             }
             return result;
         }
