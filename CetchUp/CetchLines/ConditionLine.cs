@@ -69,5 +69,23 @@ namespace CetchUp.CetchLines
             }
             return result;
         }
+
+        public override string ToString()
+        {
+            string result = "";
+            bool firstCondition = true;
+            foreach (Condition condition in conditions)
+            {
+                string startString = "and  ";
+                if (firstCondition) { startString = "When "; }
+                result += $"{startString}{condition.ToString()}\n";
+            }
+            foreach (ICetchLine line in InnerLines)
+            {
+                result += $"     {line.ToString()}";
+                if (line != InnerLines[InnerLines.Count - 1]) { result += "\n"; }
+            }
+            return result;
+        }
     }
 }

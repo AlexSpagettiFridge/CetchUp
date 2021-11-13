@@ -29,6 +29,7 @@ namespace Test
             WriteCurrentStats(cetchy);
 
             Console.WriteLine("--Modifier toString");
+            Console.WriteLine(repository["Header"].ToString());
             Console.WriteLine(repository["Bla"].ToString());
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)

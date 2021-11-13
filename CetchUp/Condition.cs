@@ -47,5 +47,23 @@ namespace CetchUp
         {
             Greater, Smaller, Equal, GreaterEqual, SmallerEqual
         }
+
+        private string ComparisionToSymbolString(ComparisonType comparer)
+        {
+            switch (comparer)
+            {
+                case ComparisonType.Greater: return ">";
+                case ComparisonType.Smaller: return "<";
+                case ComparisonType.Equal: return "==";
+                case ComparisonType.GreaterEqual: return ">=";
+                case ComparisonType.SmallerEqual: return "<=";
+            }
+            return "";
+        }
+
+        public override string ToString()
+        {
+            return $"({firstValue.ToString()} {ComparisionToSymbolString(comparer)} {secondValue.ToString()})";
+        }
     }
 }

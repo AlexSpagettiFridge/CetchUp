@@ -76,8 +76,10 @@ namespace CetchUp
         public override string ToString()
         {
             string result = "";
-            foreach(ICetchLine line in lines){
-                result += $"{line.ToString()}\n";
+            foreach (ICetchLine line in lines)
+            {
+                result += $"{line.ToString()}";
+                if (line != lines[lines.Count-1]) { result += "\n"; }
             }
             return result;
         }

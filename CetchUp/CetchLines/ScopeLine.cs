@@ -12,6 +12,8 @@ namespace CetchUp.CetchLines
             innerLines = lines;
         }
 
+        public List<ICetchLine> InnerLines => innerLines;
+
         public void JoinInnerLines(CetchModifierEntry cetchModifierEntry)
         {
             if (joinedObjects.Contains(cetchModifierEntry.CetchUpObject)) { return; }
@@ -30,6 +32,15 @@ namespace CetchUp.CetchLines
             {
                 line.Remove(cetchModifierEntry);
             }
+        }
+
+        public override string ToString()
+        {
+            string result = "";
+            foreach(ICetchLine line in innerLines){
+                result += $"{line.ToString()}\n";
+            }
+            return result;
         }
     }
 }
