@@ -73,5 +73,38 @@ namespace CetchUp.EquationElements
             }
             return total;
         }
+
+        public override string ToString()
+        {
+            string result = "";
+            foreach (IEquationElement element in elements)
+            {
+                if (element is EEequation)
+                {
+                    EEequation subEquation = (EEequation)element;
+                    if (subEquation.elements.Count == 3)
+                    {
+                        if (subEquation.elements[1] is EEsymbol)
+                        {
+                            EEsymbol symbol = (EEsymbol)subEquation.elements[1];
+                            if (symbol.symbol == '*' || symbol.symbol == '/')
+                            {
+                                result += element.ToString();
+                                continue;
+                            }
+                        }
+                    }
+                    result += $"({element.ToString()})";
+                    continue;
+                }
+                if (element is EEsymbol)
+                {
+                    result += $" {element.ToString()} ";
+                    continue;
+                }
+                result += element.ToString();
+            }
+            return result;
+        }
     }
 }

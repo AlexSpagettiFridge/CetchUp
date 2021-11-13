@@ -13,5 +13,10 @@ namespace CetchUp.EquationElements
         {
             throw new System.NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return symbol.ToString();
+        }
     }
 }

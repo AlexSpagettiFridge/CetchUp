@@ -27,5 +27,10 @@ namespace CetchUp.EquationElements
         }
 
         public static EEconstant Zero => new EEconstant(0);
+
+        public override string ToString()
+        {
+            return isNegative ? (-value).ToString() : value.ToString();
+        }
     }
 }

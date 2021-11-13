@@ -28,7 +28,8 @@ namespace Test
             cetchy.ApplyModifier(cetchUpObject.MakeModifer());
             WriteCurrentStats(cetchy);
 
-            Console.WriteLine("the End");
+            Console.WriteLine("--Modifier toString");
+            Console.WriteLine(repository["Bla"].ToString());
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)
         {

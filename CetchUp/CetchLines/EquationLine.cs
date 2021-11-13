@@ -79,5 +79,10 @@ namespace CetchUp.CetchLines
             }
             valueCollection.GetCetchValue(modifiedValue).ModifyValue(this);
         }
+
+        public override string ToString()
+        {
+            return $"{modifiedValue}: {equation.ToString()}";
+        }
     }
 }

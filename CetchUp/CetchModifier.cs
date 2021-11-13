@@ -72,5 +72,14 @@ namespace CetchUp
                 line.Remove(cetchModifierEntry);
             }
         }
+
+        public override string ToString()
+        {
+            string result = "";
+            foreach(ICetchLine line in lines){
+                result += $"{line.ToString()}\n";
+            }
+            return result;
+        }
     }
 }

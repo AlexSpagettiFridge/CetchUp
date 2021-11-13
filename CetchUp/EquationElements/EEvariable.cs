@@ -28,5 +28,10 @@ namespace CetchUp.EquationElements
             }
             return cetchModifierEntry.CetchUpObject.GetValue(name) * (isNegative ? -1 : 1);
         }
+
+        public override string ToString()
+        {
+            return (isNegative ? "-" : "") +name;
+        }
     }
 }
