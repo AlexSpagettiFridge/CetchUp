@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
@@ -97,23 +98,27 @@ namespace CetchUp.EquationElements
             return total;
         }
 
-        public void ModifyByValue(float modify)
+        public void ModifyByValue(float modifier)
         {
             for (int i = 0; i < elements.Count; i++)
             {
                 if (elements[i] is EEequation)
                 {
-                    ((EEequation)elements[i]).ModifyByValue(modify);
+                    ((EEequation)elements[i]).ModifyByValue(modifier);
                 }
                 if (elements[i] is EEconstant)
                 {
-                    elements[i] = new EEconstant(((EEconstant)elements[i]).value * modify);
+                    elements[i] = new EEconstant(((EEconstant)elements[i]).value * modifier);
                     continue;
                 }
                 if (elements[i] is EEvariable)
                 {
                     string varName = ((EEvariable)elements[i]).name;
-                    elements[i] = new EEequation($"{varName}*{modify}");
+                    ArrayList subEquation = new ArrayList();
+                    subEquation.Add(new EEvariable(varName));
+                    subEquation.Add(new EEsymbol("*"));
+                    subEquation.Add(new EEconstant(modifier.ToString("G", CultureInfo.InvariantCulture)));
+                    elements[i] = new EEequation(subEquation);
                     continue;
                 }
             }

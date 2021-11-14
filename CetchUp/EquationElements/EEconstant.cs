@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
@@ -11,8 +12,7 @@ namespace CetchUp.EquationElements
         {
             isNegative = Regex.IsMatch(line, "^-.+$");
             if (isNegative) { line = line.Substring(1); }
-            value = float.Parse(line);
-
+            value = float.Parse(line, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
 
         public EEconstant(float value)
@@ -21,7 +21,8 @@ namespace CetchUp.EquationElements
             this.value = value;
         }
 
-        public float GetValue(){
+        public float GetValue()
+        {
             return value * (isNegative ? -1 : 1);
         }
 
