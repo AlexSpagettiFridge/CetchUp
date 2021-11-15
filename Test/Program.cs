@@ -33,7 +33,7 @@ namespace Test
             Console.WriteLine(repository["Bla"].ToString());
 
             Console.WriteLine(repository["ShortenEquations"]);
-            repository["ShortenEquations"].ModifyByValue(0.5f);
+            repository["ShortenEquations"].TryShorten();
             Console.WriteLine(repository["ShortenEquations"]);
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)

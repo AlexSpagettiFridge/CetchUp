@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
 {
-    public struct EEvariable : IEquationElement
+    internal struct EEvariable : IEquationElement
     {
         public string name;
         public bool isNegative;
@@ -20,6 +20,12 @@ namespace CetchUp.EquationElements
             name = line;
         }
 
+        public EEvariable(string name, bool isNegative)
+        {
+            this.name = name;
+            this.isNegative = isNegative;
+        }
+
         public float GetValue()
         {
             throw new System.NotImplementedException();
@@ -34,9 +40,11 @@ namespace CetchUp.EquationElements
             return cetchModifierEntry.CetchUpObject.GetValue(name) * (isNegative ? -1 : 1);
         }
 
+        public IEquationElement Copy() => new EEvariable(name, isNegative);
+
         public override string ToString()
         {
-            return (isNegative ? "-" : "") +name;
+            return (isNegative ? "-" : "") + name;
         }
     }
 }

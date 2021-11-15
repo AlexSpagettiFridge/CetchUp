@@ -31,6 +31,8 @@ namespace CetchUp.EquationElements
             return GetValue();
         }
 
+        public IEquationElement Copy() => new EEconstant(value);
+
         public static EEconstant Zero => new EEconstant(0);
 
         public override string ToString()

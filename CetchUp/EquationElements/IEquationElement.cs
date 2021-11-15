@@ -4,5 +4,7 @@ namespace CetchUp.EquationElements
     {
         float GetValue();
         float GetValue(CetchModifierEntry cetchModifierEntry);
+
+        IEquationElement Copy();
     }
 }

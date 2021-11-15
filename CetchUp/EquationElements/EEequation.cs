@@ -98,8 +98,19 @@ namespace CetchUp.EquationElements
             return total;
         }
 
+        public IEquationElement Copy()
+        {
+            ArrayList newEquationElements = new ArrayList();
+            foreach (IEquationElement element in elements)
+            {
+                newEquationElements.Add(element.Copy());
+            }
+            return new EEequation(newEquationElements);
+        }
+
         public void ModifyByValue(float modifier)
         {
+            TryShorten();
             for (int i = 0; i < elements.Count; i++)
             {
                 if (elements[i] is EEequation)
@@ -122,7 +133,25 @@ namespace CetchUp.EquationElements
                     continue;
                 }
             }
+            EncapsuleFactorBasedOperations();
             TryShorten();
+        }
+
+        private void EncapsuleFactorBasedOperations()
+        {
+            for (int i = 1; i < elements.Count - 1; i++)
+            {
+                if (elements[i] is EEsymbol)
+                {
+                    EEsymbol symbol = (EEsymbol)elements[i];
+                    if (symbol.IsFactorBasedOperation)
+                    {
+                        ArrayList newEquationElements = new ArrayList();
+                        newEquationElements.Add(elements[i - 1]);
+                        elements.RemoveRange(i, 2);
+                    }
+                }
+            }
         }
 
         public void TryShorten()
@@ -140,53 +169,50 @@ namespace CetchUp.EquationElements
             int i = 0;
             while (i < elements.Count - 2)
             {
-                if (elements[i] is EEconstant)
+                if (elements[i + 1] is EEsymbol)
                 {
-                    if (elements[i + 1] is EEsymbol && elements[i + 2] is EEconstant)
-                    {
-                        EEequation newEquation = new EEequation($"{elements[i].ToString()}{elements[i + 1].ToString()}{elements[i + 2].ToString()}");
-                        EEconstant newElement = new EEconstant(newEquation.GetValue());
-                        elements.RemoveRange(i + 1, 2);
-                        if (newElement.GetValue() == 0)
-                        {
-                            elements.RemoveAt(i);
-                            continue;
-                        }
-                        elements[i] = newElement;
-                        continue;
-                    }
-                }
-                if (elements[i] is EEvariable)
-                {
-                    if (elements[i + 1] is EEsymbol && elements[i + 2] is EEvariable)
-                    {
-                        EEsymbol symbol = (EEsymbol)elements[i + 1];
-                        EEvariable var1 = (EEvariable)elements[i];
-                        EEvariable var2 = (EEvariable)elements[i + 2];
-                        if (var1.name == var2.name && (symbol.symbol == '+' || symbol.symbol == '-'))
-                        {
+                    EEsymbol symbol = (EEsymbol)elements[i + 1];
 
-                            int totalSign = (var1.isNegative ? -1 : 1);
-                            if (symbol.symbol == '+')
-                            {
-                                totalSign += (var2.isNegative ? -1 : 1);
-                            }
-                            else
-                            {
-                                totalSign -= (var2.isNegative ? -1 : 1);
-                            }
+                    if (elements[i] is EEconstant)
+                    {
+                        if (elements[i + 1] is EEsymbol && elements[i + 2] is EEconstant)
+                        {
+                            EEequation newEquation = new EEequation($"{elements[i].ToString()}{elements[i + 1].ToString()}{elements[i + 2].ToString()}");
+                            EEconstant newElement = new EEconstant(newEquation.GetValue());
                             elements.RemoveRange(i + 1, 2);
-                            if (totalSign == 0)
+                            if (newElement.GetValue() == 0)
                             {
                                 elements.RemoveAt(i);
                                 continue;
                             }
-                            elements[i] = new EEequation($"{var1.name}*{totalSign}");
+                            elements[i] = newElement;
+                            continue;
+                        }
+                    }
+
+                    if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i], out string varName1, out float amount1))
+                    {
+                        if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i + 2], out string varName2, out float amount2))
+                        {
+                            if (varName1 == varName2 && !symbol.IsFactorBasedOperation)
+                            {
+                                float totalSign = amount1 + amount2;
+
+                                elements.RemoveRange(i + 1, 2);
+                                if (totalSign == 0)
+                                {
+                                    elements.RemoveAt(i);
+                                    continue;
+                                }
+                                elements[i] = new EEequation($"{varName1}*{totalSign}");
+                                continue;
+                            }
                         }
                     }
                 }
                 i++;
             }
+            EncapsuleFactorBasedOperations();
         }
 
         public override string ToString()
@@ -202,7 +228,7 @@ namespace CetchUp.EquationElements
                         if (subEquation.elements[1] is EEsymbol)
                         {
                             EEsymbol symbol = (EEsymbol)subEquation.elements[1];
-                            if (symbol.symbol == '*' || symbol.symbol == '/')
+                            if (symbol.IsFactorBasedOperation)
                             {
                                 result += element.ToString();
                                 continue;

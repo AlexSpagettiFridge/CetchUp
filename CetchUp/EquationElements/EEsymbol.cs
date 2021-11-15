@@ -1,6 +1,6 @@
 namespace CetchUp.EquationElements
 {
-    internal class EEsymbol : IEquationElement
+    internal struct EEsymbol : IEquationElement
     {
         public char symbol;
 
@@ -8,6 +8,13 @@ namespace CetchUp.EquationElements
         {
             symbol = line.ToCharArray()[0];
         }
+
+        public EEsymbol(char symbol)
+        {
+            this.symbol = symbol;
+        }
+
+        public bool IsFactorBasedOperation => (symbol == '*' || symbol == '/');
 
         public float GetValue()
         {
@@ -18,6 +25,8 @@ namespace CetchUp.EquationElements
         {
             throw new System.NotImplementedException();
         }
+
+        public IEquationElement Copy() => new EEsymbol(symbol); 
 
         public override string ToString()
         {
