@@ -50,6 +50,14 @@ namespace CetchUp.CetchLines
             RemoveInnerLines(cetchModifierEntry);
         }
 
+        public void ModifyByValue(float value)
+        {
+            foreach (ICetchLine line in InnerLines)
+            {
+                line.ModifyByValue(value);
+            }
+        }
+
         public void OnRelevantValueChanged(object sender, CetchValue.ChangedEventArgs args)
         {
             CheckConditionsForObject(args.cetchModifierEntry);

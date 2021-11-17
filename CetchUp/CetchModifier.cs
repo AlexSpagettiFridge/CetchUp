@@ -34,10 +34,7 @@ namespace CetchUp
         {
             foreach (ICetchLine line in lines)
             {
-                if (line is EquationLine)
-                {
-                    ((EquationLine)line).ModifyByValue(value);
-                }
+                line.ModifyByValue(value);
             }
         }
 
