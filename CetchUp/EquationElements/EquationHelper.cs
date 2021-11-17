@@ -68,6 +68,11 @@ namespace CetchUp.EquationElements
             return false;
         }
 
+        public static bool IsElementVariableMultiplication(IEquationElement element)
+        {
+            return IsElementVariableMultiplication(element, out string variableName, out float amount);
+        }
+
         private static void GetVariableMultiplicationInfo(EEvariable variableElement, EEconstant constantElement, ref string variableName, ref float amount)
         {
             variableName = variableElement.name;

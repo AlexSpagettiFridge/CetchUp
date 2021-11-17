@@ -144,34 +144,46 @@ namespace CetchUp.EquationElements
             return true;
         }
 
-        public void ModifyByValue(float modifier)
+        public static IEquationElement operator *(EEequation a, float b)
         {
-            TryShorten();
-            for (int i = 0; i < elements.Count; i++)
+            a.TryShorten();
+            ArrayList elements = new ArrayList();
+            if (EquationHelper.IsElementVariableMultiplication(a, out string variableName, out float amount))
             {
-                if (elements[i] is EEequation)
+                elements.Add(EquationHelper.CreateElement(0, new Dictionary<string, float> { { variableName, amount * b } }));
+            }
+            else
+            {
+                foreach (IEquationElement element in a.elements)
                 {
-                    ((EEequation)elements[i]).ModifyByValue(modifier);
-                }
-                if (elements[i] is EEconstant)
-                {
-                    elements[i] = new EEconstant(((EEconstant)elements[i]).value * modifier);
-                    continue;
-                }
-                if (elements[i] is EEvariable)
-                {
-                    string varName = ((EEvariable)elements[i]).name;
-                    ArrayList subEquation = new ArrayList();
-                    subEquation.Add(new EEvariable(varName));
-                    subEquation.Add(new EEsymbol("*"));
-                    subEquation.Add(new EEconstant(modifier.ToString("G", CultureInfo.InvariantCulture)));
-                    elements[i] = new EEequation(subEquation);
-                    continue;
+                    if (element is EEconstant)
+                    {
+                        elements.Add(new EEconstant(element.GetValue() * b));
+                        continue;
+                    }
+                    if (element is EEvariable)
+                    {
+                        EEvariable variableElement = (EEvariable)element;
+                        elements.Add(EquationHelper.CreateElement(0, new Dictionary<string, float> { { variableElement.name, b } }));
+                        continue;
+                    }
+                    if (element is EEequation)
+                    {
+                        elements.Add(((EEequation)element) * b);
+                        continue;
+                    }
+                    elements.Add(element);
                 }
             }
-            TryShorten();
+            EEequation c = new EEequation(elements);
+            c.TryShorten();
+            return c;
         }
 
+        /// <summary>
+        /// Encapsulates every multiplication or division operation in an extra Equation.
+        /// This way factor based operations will have priority over additions and subtractions.
+        /// <summary>
         private void EncapsuleFactorBasedOperations()
         {
             if (elements.Count <= 3) { return; }
@@ -261,7 +273,7 @@ namespace CetchUp.EquationElements
             }
             newElements.Add(EquationHelper.CreateElement(totalConstant, variables));
             elements = newElements;
-            EncapsuleFactorBasedOperations();
+
             if (elements.Count == 1)
             {
                 if (elements[0] is EEequation)
@@ -269,6 +281,7 @@ namespace CetchUp.EquationElements
                     elements = ((EEequation)elements[0]).elements;
                 }
             }
+            EncapsuleFactorBasedOperations();
         }
 
         public override string ToString()

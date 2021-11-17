@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using CetchUp.EquationElements;
@@ -57,7 +58,15 @@ namespace CetchUp.CetchLines
 
         public void ModifyByValue(float modifier)
         {
-            equation.ModifyByValue(modifier);
+            IEquationElement moddedElement = equation * modifier;
+            if (moddedElement is EEequation)
+            {
+                equation = (EEequation)moddedElement;
+            }
+            else
+            {
+                equation = new EEequation(new ArrayList { moddedElement });
+            }
         }
 
         private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)
