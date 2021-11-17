@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System;
+using System.Collections;
 
 namespace CetchUp.EquationElements
 {
@@ -53,15 +54,15 @@ namespace CetchUp.EquationElements
             if (equationElement.elements.Count != 3) { return false; }
             if (!(equationElement.elements[1] is EEsymbol)) { return false; }
             if (!(equationElement.elements[0] is EEconstant || equationElement.elements[2] is EEconstant)) { return false; }
-            
+
             if (equationElement.elements[0] is EEvariable)
             {
-                GetVariableMultiplicationInfo((EEvariable)equationElement.elements[0],(EEconstant)equationElement.elements[2],ref variableName, ref amount);
+                GetVariableMultiplicationInfo((EEvariable)equationElement.elements[0], (EEconstant)equationElement.elements[2], ref variableName, ref amount);
                 return true;
             }
             if (equationElement.elements[2] is EEvariable)
             {
-                GetVariableMultiplicationInfo((EEvariable)equationElement.elements[2],(EEconstant)equationElement.elements[0],ref variableName, ref amount);
+                GetVariableMultiplicationInfo((EEvariable)equationElement.elements[2], (EEconstant)equationElement.elements[0], ref variableName, ref amount);
                 return true;
             }
             return false;
@@ -75,6 +76,40 @@ namespace CetchUp.EquationElements
             {
                 amount *= -1;
             }
+        }
+
+        public static IEquationElement CreateElement(float totalConstant, Dictionary<string, float> variables)
+        {
+            EEequation newQuation = new EEequation(new ArrayList());
+            if (totalConstant != 0)
+            {
+                newQuation.elements.Add(new EEconstant(totalConstant));
+            }
+            foreach (KeyValuePair<string, float> entry in variables)
+            {
+                if (entry.Value == 0) { continue; }
+                if (newQuation.elements.Count != 0)
+                {
+                    newQuation.elements.Add(new EEsymbol(entry.Value >= 0 ? '+' : '-'));
+                }
+                EEvariable variableElement = new EEvariable(entry.Key, false);
+                if (Math.Abs(entry.Value) == 1)
+                {
+                    newQuation.elements.Add(variableElement);
+                    continue;
+                }
+                ArrayList subElements = new ArrayList();
+                subElements.Add(variableElement);
+                subElements.Add(new EEsymbol('*'));
+                subElements.Add(new EEconstant(Math.Abs(entry.Value)));
+                newQuation.elements.Add(new EEequation(subElements));
+            }
+            if (newQuation.elements.Count == 1)
+            {
+                return (IEquationElement)newQuation.elements[0];
+            }
+
+            return newQuation;
         }
     }
 }

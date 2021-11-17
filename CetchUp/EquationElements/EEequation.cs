@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -108,6 +109,41 @@ namespace CetchUp.EquationElements
             return new EEequation(newEquationElements);
         }
 
+        public bool IsConstantOnly(out float value)
+        {
+            EEsymbol lastSymbol = new EEsymbol('+');
+            value = 0;
+            foreach (IEquationElement element in elements)
+            {
+                if (element is EEsymbol)
+                {
+                    lastSymbol = (EEsymbol)element;
+                    continue;
+                }
+                if (element is EEconstant)
+                {
+                    EEconstant constantElement = (EEconstant)element;
+                    switch (lastSymbol.symbol)
+                    {
+                        case '+': value += constantElement.value; continue;
+                        case '-': value -= constantElement.value; continue;
+                        case '*': value *= constantElement.value; continue;
+                        case '/': value /= constantElement.value; continue;
+                    }
+                }
+                if (element is EEequation)
+                {
+                    if (((EEequation)element).IsConstantOnly(out float constantValue))
+                    {
+                        value += constantValue;
+                    }
+                    return false;
+                }
+                return false;
+            }
+            return true;
+        }
+
         public void ModifyByValue(float modifier)
         {
             TryShorten();
@@ -133,12 +169,12 @@ namespace CetchUp.EquationElements
                     continue;
                 }
             }
-            EncapsuleFactorBasedOperations();
             TryShorten();
         }
 
         private void EncapsuleFactorBasedOperations()
         {
+            if (elements.Count <= 3) { return; }
             for (int i = 1; i < elements.Count - 1; i++)
             {
                 if (elements[i] is EEsymbol)
@@ -156,6 +192,7 @@ namespace CetchUp.EquationElements
 
         public void TryShorten()
         {
+            EncapsuleFactorBasedOperations();
             for (int n = 0; n < elements.Count; n++)
             {
                 if (!(elements[n] is EEequation)) { continue; }
@@ -166,53 +203,72 @@ namespace CetchUp.EquationElements
                     elements[n] = equation.elements[0];
                 }
             }
-            int i = 0;
-            while (i < elements.Count - 2)
+            int groupStartIndex = 0;
+            float totalConstant = 0;
+            bool isNegative = false;
+            ArrayList newElements = new ArrayList();
+            Dictionary<string, float> variables = new Dictionary<string, float>();
+            for (int i = 0; i < elements.Count; i++)
             {
-                if (elements[i + 1] is EEsymbol)
+                if (elements[i] is EEsymbol)
                 {
-                    EEsymbol symbol = (EEsymbol)elements[i + 1];
-
-                    if (elements[i] is EEconstant)
+                    if (((EEsymbol)elements[i]).IsFactorBasedOperation)
                     {
-                        if (elements[i + 1] is EEsymbol && elements[i + 2] is EEconstant)
-                        {
-                            EEequation newEquation = new EEequation($"{elements[i].ToString()}{elements[i + 1].ToString()}{elements[i + 2].ToString()}");
-                            EEconstant newElement = new EEconstant(newEquation.GetValue());
-                            elements.RemoveRange(i + 1, 2);
-                            if (newElement.GetValue() == 0)
-                            {
-                                elements.RemoveAt(i);
-                                continue;
-                            }
-                            elements[i] = newElement;
-                            continue;
-                        }
+                        isNegative = false;
+                        newElements.Add(EquationHelper.CreateElement(totalConstant, variables));
+                        totalConstant = 0;
+                        groupStartIndex = i + 1;
+                        variables = new Dictionary<string, float>();
+                        newElements.Add(((IEquationElement)elements[i]).Copy());
+                        continue;
                     }
-
-                    if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i], out string varName1, out float amount1))
+                    isNegative = ((EEsymbol)elements[i]).symbol == '-';
+                    continue;
+                }
+                if (elements[i] is EEconstant)
+                {
+                    EEconstant constantElement = (EEconstant)elements[i];
+                    if (!isNegative)
                     {
-                        if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i + 2], out string varName2, out float amount2))
-                        {
-                            if (varName1 == varName2 && !symbol.IsFactorBasedOperation)
-                            {
-                                float totalSign = amount1 + amount2;
-
-                                elements.RemoveRange(i + 1, 2);
-                                if (totalSign == 0)
-                                {
-                                    elements.RemoveAt(i);
-                                    continue;
-                                }
-                                elements[i] = new EEequation($"{varName1}*{totalSign}");
-                                continue;
-                            }
-                        }
+                        totalConstant += constantElement.value;
+                    }
+                    else
+                    {
+                        totalConstant -= constantElement.value;
+                    }
+                    continue;
+                }
+                if (elements[i] is EEequation)
+                {
+                    if (((EEequation)elements[i]).IsConstantOnly(out float constantValue))
+                    {
+                        if (isNegative) { constantValue *= -1; }
+                        totalConstant += constantValue;
+                        continue;
                     }
                 }
-                i++;
+                if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i], out string variableName, out float amount))
+                {
+                    if (!variables.ContainsKey(variableName))
+                    {
+                        variables.Add(variableName, 0);
+                    }
+                    if (isNegative) { amount *= -1; }
+                    variables[variableName] += amount;
+                    continue;
+                }
+                newElements.Add(((IEquationElement)elements[i]).Copy());
             }
+            newElements.Add(EquationHelper.CreateElement(totalConstant, variables));
+            elements = newElements;
             EncapsuleFactorBasedOperations();
+            if (elements.Count == 1)
+            {
+                if (elements[0] is EEequation)
+                {
+                    elements = ((EEequation)elements[0]).elements;
+                }
+            }
         }
 
         public override string ToString()
