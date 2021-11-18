@@ -22,6 +22,11 @@ namespace CetchUp
             return new CetchModifier(genString);
         }
 
+        /// <summary>
+        /// Applies a CetchModifier to this CetchUpObject.
+        /// This way the CetchValues inside this CetchUpObject will be modified.
+        /// </summary>
+        /// <param name="modifier">The modifier that should be applied.</param>
         public CetchModifierEntry ApplyModifier(CetchModifier modifier)
         {
             CetchModifierEntry entry = new CetchModifierEntry(this, modifier);

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace CetchUp
 {
+    /// <summary>
+    /// A collection of CetchValues.
+    /// </summray>
     public abstract class CetchValueCollection
     {
         internal Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();

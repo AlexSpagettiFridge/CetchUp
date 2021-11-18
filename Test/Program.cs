@@ -28,18 +28,20 @@ namespace Test
             cetchy.ApplyModifier(cetchUpObject.MakeModifer());
             WriteCurrentStats(cetchy);
 
-            Console.WriteLine("--Modifier toString");
-            Console.WriteLine(repository["Header"].ToString());
-            Console.WriteLine(repository["Bla"].ToString());
-
             Console.WriteLine("--ShortenEquation.cetch");
             Console.WriteLine(repository["ShortenEquations"]);
             Console.WriteLine("--ShortenEquation.cetch (shortened)");
             repository["ShortenEquations"].TryShorten();
             Console.WriteLine(repository["ShortenEquations"]);
             Console.WriteLine("--ShortenEquation.cetch (modified by 0.5f)");
-            repository["ShortenEquations"].ModifyByValue(0.5f);
+            repository["ShortenEquations"].MultiplyByValue(0.5f);
             Console.WriteLine(repository["ShortenEquations"]);
+
+            Console.WriteLine("--Yep.cetch & Yep.cetch");
+            Console.WriteLine(repository["Yep"]);
+            Console.WriteLine(repository["Yip"]);
+            Console.WriteLine("--Yep.cetch & Yep.cetch (combined)");
+            Console.WriteLine(repository["Yep"] + repository["Yip"]);
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)
         {

@@ -26,7 +26,7 @@ namespace CetchUp.EquationElements
             throw new System.NotImplementedException();
         }
 
-        public IEquationElement Copy() => new EEsymbol(symbol); 
+        public object Clone() => new EEsymbol(symbol); 
 
         public override string ToString()
         {

@@ -99,14 +99,35 @@ namespace CetchUp.EquationElements
             return total;
         }
 
-        public IEquationElement Copy()
+        public object Clone()
         {
             ArrayList newEquationElements = new ArrayList();
             foreach (IEquationElement element in elements)
             {
-                newEquationElements.Add(element.Copy());
+                newEquationElements.Add(element.Clone());
             }
             return new EEequation(newEquationElements);
+        }
+
+        /// <summary>
+        /// Gathers all variable names from this equation.
+        /// </summary>
+        /// <result>A list of variable names.</result>
+        public List<string> GetAllDependencies()
+        {
+            List<string> result = new List<string>();
+            foreach (IEquationElement element in elements)
+            {
+                if (element is EEvariable)
+                {
+                    result.Add(((EEvariable)element).name);
+                }
+                if (element is EEequation)
+                {
+                    result.AddRange(((EEequation)element).GetAllDependencies());
+                }
+            }
+            return result;
         }
 
         public bool IsConstantOnly(out float value)
@@ -231,7 +252,7 @@ namespace CetchUp.EquationElements
                         totalConstant = 0;
                         groupStartIndex = i + 1;
                         variables = new Dictionary<string, float>();
-                        newElements.Add(((IEquationElement)elements[i]).Copy());
+                        newElements.Add(((IEquationElement)elements[i]).Clone());
                         continue;
                     }
                     isNegative = ((EEsymbol)elements[i]).symbol == '-';
@@ -269,7 +290,7 @@ namespace CetchUp.EquationElements
                     variables[variableName] += amount;
                     continue;
                 }
-                newElements.Add(((IEquationElement)elements[i]).Copy());
+                newElements.Add(((IEquationElement)elements[i]).Clone());
             }
             newElements.Add(EquationHelper.CreateElement(totalConstant, variables));
             elements = newElements;

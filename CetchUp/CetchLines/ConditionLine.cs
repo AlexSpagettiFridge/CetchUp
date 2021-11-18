@@ -18,6 +18,12 @@ namespace CetchUp.CetchLines
             }
         }
 
+        public ConditionLine(List<Condition> conditions, List<string> dependencies, List<ICetchLine> lines) : base(lines)
+        {
+            this.conditions = conditions;
+            this.dependencies = dependencies;
+        }
+
         public void JoinObject(CetchModifierEntry cetchModifierEntry)
         {
             foreach (CetchValue dependency in GetDependentValues(cetchModifierEntry))
@@ -56,6 +62,26 @@ namespace CetchUp.CetchLines
             {
                 line.ModifyByValue(value);
             }
+        }
+
+        public object Clone()
+        {
+            List<ICetchLine> newInnerLines = new List<ICetchLine>();
+            foreach (ICetchLine line in InnerLines)
+            {
+                newInnerLines.Add((ICetchLine)line.Clone());
+            }
+            List<string> newDependencies = new List<string>();
+            foreach (string dep in dependencies)
+            {
+                newDependencies.Add((string)dep.Clone());
+            }
+            List<Condition> newConditions = new List<Condition>();
+            foreach (Condition condition in conditions)
+            {
+                newConditions.Add((Condition)condition.Clone());
+            }
+            return new ConditionLine(newConditions, newDependencies, newInnerLines);
         }
 
         public void OnRelevantValueChanged(object sender, CetchValue.ChangedEventArgs args)

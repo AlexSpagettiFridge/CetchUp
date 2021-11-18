@@ -27,7 +27,7 @@ namespace CetchUp.EquationElements
             return GetValue();
         }
 
-        public IEquationElement Copy() => new EEconstant(value);
+        public object Clone() => new EEconstant(value);
 
         public static EEconstant Zero => new EEconstant(0);
 

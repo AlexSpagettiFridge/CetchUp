@@ -40,7 +40,7 @@ namespace CetchUp.EquationElements
             return cetchModifierEntry.CetchUpObject.GetValue(name) * (isNegative ? -1 : 1);
         }
 
-        public IEquationElement Copy() => new EEvariable(name, isNegative);
+        public object Clone() => new EEvariable(name, isNegative);
 
         public override string ToString()
         {

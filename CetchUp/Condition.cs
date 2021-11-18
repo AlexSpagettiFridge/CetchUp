@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace CetchUp
 {
-    internal class Condition
+    internal class Condition : ICloneable
     {
         public IEquationElement firstValue, secondValue;
         public ComparisonType comparer;
@@ -28,6 +28,15 @@ namespace CetchUp
             firstValue = EquationHelper.CreateEquationElementFromLine(parts[0], ref dependencies);
             secondValue = EquationHelper.CreateEquationElementFromLine(parts[1], ref dependencies);
         }
+
+        public Condition(IEquationElement firstValue, ComparisonType comparer, IEquationElement secondValue)
+        {
+            this.firstValue = firstValue;
+            this.comparer = comparer;
+            this.secondValue = secondValue;
+        }
+
+        public object Clone() => new Condition(firstValue, comparer, secondValue);
 
         public bool IsConditionMet(CetchModifierEntry cetchModifierEntry)
         {

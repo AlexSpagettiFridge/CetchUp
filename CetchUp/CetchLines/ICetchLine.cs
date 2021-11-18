@@ -1,6 +1,8 @@
+using System;
+
 namespace CetchUp
 {
-    internal interface ICetchLine
+    internal interface ICetchLine : ICloneable
     {
         void JoinObject(CetchModifierEntry cetchModifierEntry);
         void Remove(CetchModifierEntry cetchModifierEntry);
