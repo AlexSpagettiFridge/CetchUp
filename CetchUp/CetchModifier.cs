@@ -26,7 +26,7 @@ namespace CetchUp
 
         public CetchModifier(string genString)
         {
-            if (Regex.IsMatch(genString, @"^[a-zA-Z0-9\/]*\.cetch$"))
+            if (Regex.IsMatch(genString, @"^[a-zA-Z0-9\/\\]*\.cetch$"))
             {
                 StreamReader reader = new StreamReader(genString);
                 Populate(reader.ReadToEnd());

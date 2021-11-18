@@ -38,10 +38,10 @@ namespace Test
             Console.WriteLine(repository["ShortenEquations"]);
 
             Console.WriteLine("--Yep.cetch & Yep.cetch");
-            Console.WriteLine(repository["Yep"]);
-            Console.WriteLine(repository["Yip"]);
+            Console.WriteLine(repository["Addition.Yep"]);
+            Console.WriteLine(repository["Addition.Yip"]);
             Console.WriteLine("--Yep.cetch & Yep.cetch (combined)");
-            Console.WriteLine(repository["Yep"] + repository["Yip"]);
+            Console.WriteLine(repository["Addition.Yep"] + repository["Addition.Yip"]);
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)
         {

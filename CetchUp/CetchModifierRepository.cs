@@ -17,23 +17,22 @@ namespace CetchUp
 
         public void AddDirectory(string path)
         {
-            Regex regex = new Regex(@"^.*\.cetch$");
-            SearchFolderAndAddToCollection(path, regex);
+            SearchFolderAndAddToCollection(path);
         }
 
-        private void SearchFolderAndAddToCollection(string path, Regex regex)
+        private void SearchFolderAndAddToCollection(string path, string folderName = "")
         {
             foreach (string fileName in Directory.GetFiles(path))
             {
-                if (regex.IsMatch(fileName))
+                if (Regex.IsMatch(fileName, @".*\.cetch$"))
                 {
-                    string correctedName = Regex.Replace(Regex.Replace(fileName, ".cetch$", ""), @"^.*\/", "");
+                    string correctedName = folderName + Regex.Match(fileName, @"([A-Za-z]*)\.cetch$").Groups[1].Value;
                     Add(correctedName, new CetchModifier(fileName));
                 }
             }
             foreach (string fileName in Directory.GetDirectories(path))
             {
-                SearchFolderAndAddToCollection(path + fileName, regex);
+                SearchFolderAndAddToCollection(fileName, folderName + Regex.Match(fileName, "[A-z]*$") + ".");
             }
         }
 
