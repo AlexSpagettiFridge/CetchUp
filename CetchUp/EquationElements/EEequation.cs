@@ -292,6 +292,7 @@ namespace CetchUp.EquationElements
                 }
                 newElements.Add(((IEquationElement)elements[i]).Clone());
             }
+            if (newElements.Count > 0 && !(newElements[newElements.Count - 1] is EEsymbol)) { newElements.Add(new EEsymbol('+')); }
             newElements.Add(EquationHelper.CreateElement(totalConstant, variables));
             elements = newElements;
 

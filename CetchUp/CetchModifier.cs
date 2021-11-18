@@ -187,7 +187,7 @@ namespace CetchUp
                         allEquations.Add(equationLines[i]);
                     }
                     EEequation totalEquation = new EEequation(allEquations);
-                    //totalEquation.TryShorten();
+                    totalEquation.TryShorten();
                     c.lines.Add(new EquationLine(specificVariable, totalEquation, dependencies, varList == variableSpecificModEquations));
                 }
                 if (varList == variableSpecificModEquations) { break; }
