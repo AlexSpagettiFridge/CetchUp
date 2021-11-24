@@ -32,7 +32,7 @@ namespace CetchUp
             }
             foreach (string fileName in Directory.GetDirectories(path))
             {
-                SearchFolderAndAddToCollection(fileName, folderName + Regex.Match(fileName, "[A-z]*$") + ".");
+                SearchFolderAndAddToCollection(fileName, folderName + Regex.Match(fileName, @"[^\/\\]*$") + ".");
             }
         }
 
