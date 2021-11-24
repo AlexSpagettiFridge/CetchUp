@@ -13,7 +13,7 @@ namespace CetchUp.EquationElements
             {
                 return new EEequation(line.Substring(1, line.Length - 2), ref dependencies);
             }
-            if (Regex.IsMatch(line, "^[A-z_]*$"))
+            if (Regex.IsMatch(line, "^#*[A-z_]*$"))
             {
                 return new EEvariable(line, ref dependencies);
             }

@@ -40,8 +40,22 @@ namespace Test
             Console.WriteLine("--Yep.cetch & Yep.cetch");
             Console.WriteLine(repository["Addition.Yep"]);
             Console.WriteLine(repository["Addition.Yip"]);
-            Console.WriteLine("--Yep.cetch & Yep.cetch (combined)");
+            Console.WriteLine("--Yep.cetch & Yip.cetch (combined)");
             Console.WriteLine(repository["Addition.Yep"] + repository["Addition.Yip"]);
+            Console.WriteLine("--3x Worms (combined)");
+            Console.WriteLine(repository["Addition.Worms"] + repository["Addition.Worms"] + repository["Addition.Worms"]);
+            CetchModifier superWorms = new CetchModifier();
+            for(int i=0;i<3;i++){
+                superWorms+=repository["Addition.Worms"];
+            }
+            Console.WriteLine("--3x Worms (combined differently)");
+            Console.WriteLine(repository["Addition.Worms"] + repository["Addition.Worms"] + repository["Addition.Worms"]);
+
+            Console.WriteLine("--Replace Variables");
+            Console.WriteLine(repository["Replaco"]);
+            Console.WriteLine("--Replace Variables");
+            repository["Replaco"].InsertVariable("#yo",4);
+            Console.WriteLine(repository["Replaco"]);
         }
         private static void WriteCurrentStats(CetchUpObject cetchUpObject)
         {

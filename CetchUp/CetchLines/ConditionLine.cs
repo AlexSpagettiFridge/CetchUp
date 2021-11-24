@@ -121,5 +121,13 @@ namespace CetchUp.CetchLines
             }
             return result;
         }
+
+        public void InsertVariable(string varName, float value)
+        {
+            foreach (ICetchLine line in InnerLines)
+            {
+                line.InsertVariable(varName, value);
+            }
+        }
     }
 }

@@ -100,6 +100,19 @@ namespace CetchUp
             }
         }
 
+        /// <summary>
+        /// Replaces all instances of the variable <paramref name="varName"/> with the constant <paramref name="value"/>.
+        /// </summary>
+        /// <param name="varName">The name of the local variable that should be replaced.</param>
+        /// <param name="value">The constant value the variables should be replaced with.</param>
+        public void InsertVariable(string varName, float value)
+        {
+            foreach (ICetchLine line in lines)
+            {
+                line.InsertVariable(varName, value);
+            }
+        }
+
         public void RemoveFromCetchObject(CetchModifierEntry cetchModifierEntry)
         {
             foreach (ICetchLine line in lines)

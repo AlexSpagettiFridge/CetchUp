@@ -121,5 +121,10 @@ namespace CetchUp.CetchLines
         {
             equation.TryShorten();
         }
+
+        public void InsertVariable(string varName, float value)
+        {
+            equation.InsertVariable(varName,value);
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace CetchUp.EquationElements
 {
     internal class EEequation : IEquationElement
     {
+        #region Head
         public ArrayList elements = new ArrayList();
 
         public EEequation(string line)
@@ -21,10 +22,15 @@ namespace CetchUp.EquationElements
             Init(line, ref dependencies);
         }
 
+        public EEequation(ArrayList elements)
+        {
+            this.elements = elements;
+        }
+
 
         private void Init(string line, ref List<string> dependencies)
         {
-            MatchCollection sides = Regex.Matches(line, @"\(.*\)|[*\/+-]|-?[A-z_]+|-?[0-9\.]+");
+            MatchCollection sides = Regex.Matches(line, @"\(.*\)|[*\/+-]|-?#?[A-z_]+|-?[0-9\.]+");
             foreach (Match match in sides)
             {
                 IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match.Value, ref dependencies);
@@ -47,12 +53,9 @@ namespace CetchUp.EquationElements
                 i++;
             }
         }
+        #endregion
 
-        public EEequation(ArrayList elements)
-        {
-            this.elements = elements;
-        }
-
+        #region GetInfo
         public float GetValue()
         {
             float total = 0;
@@ -97,16 +100,6 @@ namespace CetchUp.EquationElements
                 }
             }
             return total;
-        }
-
-        public object Clone()
-        {
-            ArrayList newEquationElements = new ArrayList();
-            foreach (IEquationElement element in elements)
-            {
-                newEquationElements.Add(element.Clone());
-            }
-            return new EEequation(newEquationElements);
         }
 
         /// <summary>
@@ -164,6 +157,17 @@ namespace CetchUp.EquationElements
             }
             return true;
         }
+        #endregion
+
+        public object Clone()
+        {
+            ArrayList newEquationElements = new ArrayList();
+            foreach (IEquationElement element in elements)
+            {
+                newEquationElements.Add(element.Clone());
+            }
+            return new EEequation(newEquationElements);
+        }
 
         public static IEquationElement operator *(EEequation a, float b)
         {
@@ -218,6 +222,24 @@ namespace CetchUp.EquationElements
                         ArrayList newEquationElements = new ArrayList();
                         newEquationElements.Add(elements[i - 1]);
                         elements.RemoveRange(i, 2);
+                    }
+                }
+            }
+        }
+
+        public void InsertVariable(string varName, float value)
+        {
+            for (int i = 0; i < elements.Count; i++)
+            {
+                if (elements[i] is EEequation)
+                {
+                    ((EEequation)elements[i]).InsertVariable(varName, value);
+                }
+                if (elements[i] is EEvariable)
+                {
+                    if (((EEvariable)elements[i]).name == varName)
+                    {
+                        elements[i] = new EEconstant(value);
                     }
                 }
             }
