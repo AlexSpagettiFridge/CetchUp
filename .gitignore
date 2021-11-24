@@ -1,3 +1,4 @@
-.vscode\
-CetchUp\bin\
-Test\bin\
+.vscode/
+CetchUp/bin/
+Test/bin/
+Test/obj/
