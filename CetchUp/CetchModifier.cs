@@ -12,7 +12,7 @@ namespace CetchUp
     /// A CetchModifier is created from a .cetch file. And contains instruction on how a CetchUpObject should be modified.
     /// It can be applied to a CetchUpObject via <see cref="CetchUpObject.ApplyModifier(CetchModifier)"/>.
     /// </summary>
-    public class CetchModifier
+    public class CetchModifier : ICloneable
     {
         /// <summary>
         /// Reflects the lines read from the CetchLine.
@@ -141,6 +141,16 @@ namespace CetchUp
                 if (line != lines[lines.Count - 1]) { result += "\n"; }
             }
             return result;
+        }
+
+        public object Clone()
+        {
+            CetchModifier clone = new CetchModifier();
+            foreach (ICetchLine line in lines)
+            {
+                clone.lines.Add((ICetchLine)line.Clone());
+            }
+            return clone;
         }
 
         public static CetchModifier operator +(CetchModifier a, CetchModifier b)

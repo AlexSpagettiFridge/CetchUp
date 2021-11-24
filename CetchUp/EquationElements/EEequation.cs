@@ -27,7 +27,6 @@ namespace CetchUp.EquationElements
             this.elements = elements;
         }
 
-
         private void Init(string line, ref List<string> dependencies)
         {
             MatchCollection sides = Regex.Matches(line, @"\(.*\)|[*\/+-]|-?#?[A-z_]+|-?[0-9\.]+");
