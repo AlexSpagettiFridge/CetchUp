@@ -43,7 +43,7 @@ namespace CetchUp
         /// <param name="cetchData">A string as in plain Text from a cetch file</param>
         private void Populate(string cetchData)
         {
-            cetchData = cetchData.Replace("\r\n", "").Replace("\n", "").Replace("\r", "").Replace(" ", "");
+            cetchData = cetchData.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
 
             lines = GetLinesFromCetchData(ref cetchData);
         }

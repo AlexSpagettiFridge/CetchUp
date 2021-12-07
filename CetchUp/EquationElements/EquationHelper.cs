@@ -9,6 +9,10 @@ namespace CetchUp.EquationElements
     {
         public static IEquationElement CreateEquationElementFromLine(string line, ref List<string> dependencies)
         {
+            if (Regex.IsMatch(line, @"^(Round|Floor|Ceil)\(.*\)$"))
+            {
+                return new EEfunction(line, ref dependencies);
+            }
             if (Regex.IsMatch(line, @"^\(.*\)$"))
             {
                 return new EEequation(line.Substring(1, line.Length - 2), ref dependencies);

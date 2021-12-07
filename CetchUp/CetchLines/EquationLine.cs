@@ -22,10 +22,9 @@ namespace CetchUp.CetchLines
 
         public EquationLine(string cetchLine)
         {
-            cetchLine = Regex.Replace(cetchLine, @"[\s;]", "");
             GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%])(.*)").Groups;
 
-            modifiedValue = groups[1].Value;
+            modifiedValue = Regex.Replace(groups[1].Value,@"\s","");
             isMultiplier = groups[2].Value == "%";
             dependencies = new List<string>();
             equation = new EEequation(groups[3].Value, ref dependencies);

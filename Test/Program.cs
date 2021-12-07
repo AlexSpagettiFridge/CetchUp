@@ -58,6 +58,7 @@ namespace Test
             Console.WriteLine($"smellResistance: {cetchUpObject.GetValue("smellResistance")}");
             Console.WriteLine($"endurance: {cetchUpObject.GetValue("endurance")}");
             Console.WriteLine($"bigBoyCetificate: {cetchUpObject.GetValue("bigBoyCetificate")}");
+            Console.WriteLine($"wumbleSnatch: {cetchUpObject.GetValue("wumbleSnatch")}");
         }
     }
 }
