@@ -14,7 +14,7 @@ namespace CetchUp
         private List<ValueModEntry> valueMods = new List<ValueModEntry>();
 
         public string Name => name;
-        public float Total => (baseValue + value) * multiplier;
+        public float Total { get => (baseValue + value) * multiplier; set => baseValue = (value - this.value) / multiplier; }
         public float Multiplier => multiplier;
         public event EventHandler<ChangedEventArgs> changed;
 
