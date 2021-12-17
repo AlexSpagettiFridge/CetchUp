@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CetchUp.EquationElements;
 
 namespace CetchUp
 {
@@ -34,6 +35,12 @@ namespace CetchUp
             modifier.ModifyCetchObject(entry);
             entry.valueChanged += OnLocalValueChanged;
             return entry;
+        }
+
+        public float CallLine(string line)
+        {
+            IEquationElement ee = EquationHelper.CreateEquationElementFromLine(line);
+            return ee.GetValue();
         }
 
         public bool TryRemoveModifier(CetchModifier modifier)

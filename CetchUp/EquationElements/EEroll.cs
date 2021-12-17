@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -6,6 +7,7 @@ namespace CetchUp.EquationElements
     internal class EEroll : IEquationElement
     {
         private int diceAmount, diceSize;
+        private int? rollResult = null;
 
         public EEroll() { }
 
@@ -28,12 +30,17 @@ namespace CetchUp.EquationElements
 
         public float GetValue()
         {
-            throw new System.NotImplementedException();
+            if (rollResult == null)
+            {
+                int totalRoll = 0;
+                for (int i = 0; i < diceAmount; i++)
+                {
+                    totalRoll += new Random().Next(1, diceSize);
+                }
+            }
+            return (int)rollResult;
         }
 
-        public float GetValue(CetchModifierEntry cetchModifierEntry)
-        {
-            throw new System.NotImplementedException();
-        }
+        public float GetValue(CetchModifierEntry cetchModifierEntry) => GetValue();
     }
 }

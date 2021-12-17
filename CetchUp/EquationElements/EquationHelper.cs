@@ -41,6 +41,12 @@ namespace CetchUp.EquationElements
             }
         }
 
+        public static IEquationElement CreateEquationElementFromLine(string line)
+        {
+            List<string> unnecesaryDependencies = new List<string>();
+            return CreateEquationElementFromLine(line,ref unnecesaryDependencies);
+        }
+
         public static IEquationElement CreateEquationElementFromLine(string line, ref List<string> dependencies)
         {
             foreach (KeyValuePair<Type, string> entry in EquationElementExpressions)
