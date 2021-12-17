@@ -17,21 +17,24 @@ namespace CetchUp.EquationElements
             {typeof(EEfunction), @"(Round|Floor|Ceil)\(.*\)"},
             {typeof(EEequation), @"\(.*\)"},
             {typeof(EEsymbol), @"[+\-*\/]"},
+            {typeof(EEroll), "[0-9]+d[0-9]+"},
             {typeof(EEvariable), "-?#?[A-z_]+"},
             {typeof(EEconstant), @"[0-9\.]+"},
         };
 
-        public static string CombinedEquationElementExpression{
-            get{
+        public static string CombinedEquationElementExpression
+        {
+            get
+            {
                 string expression = "";
-                int i=0;
-                foreach(string eee in EquationElementExpressions.Values)
+                int i = 0;
+                foreach (string eee in EquationElementExpressions.Values)
                 {
-                    expression+=eee;
+                    expression += eee;
                     i++;
-                    if (i<EquationElementExpressions.Count)
+                    if (i < EquationElementExpressions.Count)
                     {
-                        expression+="|";
+                        expression += "|";
                     }
                 }
                 return expression;
@@ -40,27 +43,18 @@ namespace CetchUp.EquationElements
 
         public static IEquationElement CreateEquationElementFromLine(string line, ref List<string> dependencies)
         {
-            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEfunction)]}$"))
+            foreach (KeyValuePair<Type, string> entry in EquationElementExpressions)
             {
-                return new EEfunction(line, ref dependencies);
+                if (Regex.IsMatch(line,$"^{entry.Value}$"))
+                {
+                    IEquationElement ee = (IEquationElement)entry.Key.GetConstructor(new Type[]{}).Invoke(new object[]{});
+                    ee.Init(line,ref dependencies);
+                    return ee;
+                }
             }
-            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEequation)]}$"))
-            {
-                return new EEequation(line.Substring(1, line.Length - 2), ref dependencies);
-            }
-            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEvariable)]}$"))
-            {
-                return new EEvariable(line, ref dependencies);
-            }
-            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEconstant)]}$"))
-            {
-                return new EEconstant(line);
-            }
-            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEsymbol)]}$"))
-            {
-                return new EEsymbol(line);
-            }
-            return new EEequation(line, ref dependencies);
+            EEequation equation = new EEequation();
+            equation.Init(line, ref dependencies);
+            return equation;
         }
 
         ///<summary>

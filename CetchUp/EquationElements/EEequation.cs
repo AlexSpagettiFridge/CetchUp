@@ -11,24 +11,25 @@ namespace CetchUp.EquationElements
         #region Head
         public ArrayList elements = new ArrayList();
 
-        public EEequation(string line)
-        {
-            List<string> unnecessaryList = new List<string>();
-            Init(line, ref unnecessaryList);
-        }
-
-        public EEequation(string line, ref List<string> dependencies)
-        {
-            Init(line, ref dependencies);
-        }
+        public EEequation() { }
 
         public EEequation(ArrayList elements)
         {
             this.elements = elements;
         }
 
-        private void Init(string line, ref List<string> dependencies)
+        public void Init(string line)
         {
+            List<string> unnecessaryList = new List<string>();
+            Init(line, ref unnecessaryList);
+        }
+
+        public void Init(string line, ref List<string> dependencies)
+        {
+            if (Regex.IsMatch(line,@"^\(.*\)$"))
+            {
+                line = Regex.Replace(line,@"^\(|\)$","");
+            }
             MatchCollection sides = Regex.Matches(line, EquationHelper.CombinedEquationElementExpression);
             foreach (Match match in sides)
             {
@@ -58,7 +59,7 @@ namespace CetchUp.EquationElements
         public float GetValue()
         {
             float total = 0;
-            EEsymbol lastSymbol = new EEsymbol("+");
+            EEsymbol lastSymbol = new EEsymbol('+');
             foreach (IEquationElement element in elements)
             {
                 if (element is EEsymbol)
@@ -81,7 +82,7 @@ namespace CetchUp.EquationElements
         public float GetValue(CetchModifierEntry cme)
         {
             float total = 0;
-            EEsymbol lastSymbol = new EEsymbol("+");
+            EEsymbol lastSymbol = new EEsymbol('+');
             foreach (IEquationElement element in elements)
             {
                 if (element is EEsymbol)

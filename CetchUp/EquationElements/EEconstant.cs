@@ -1,16 +1,24 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
 {
-    internal struct EEconstant : IEquationElement
+    internal class EEconstant : IEquationElement
     {
         public float value;
 
-        public EEconstant(string line)
+        public void Init(string line)
         {
             value = float.Parse(line, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
+
+        public void Init(string line, ref List<string> dependencies)
+        {
+            Init(line);
+        }
+
+        public EEconstant() { }
 
         public EEconstant(float value)
         {

@@ -3,27 +3,30 @@ using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
 {
-    internal struct EEvariable : IEquationElement
+    internal class EEvariable : IEquationElement
     {
         public string name;
         public bool isNegative;
 
-        public EEvariable(string line, ref List<string> depedencies) : this(line)
-        {
-            depedencies.Add(name);
-        }
-
-        public EEvariable(string line)
-        {
-            isNegative = Regex.IsMatch(line, "^-.+$");
-            if (isNegative) { line = line.Substring(1); }
-            name = line;
-        }
+        public EEvariable() { }
 
         public EEvariable(string name, bool isNegative)
         {
             this.name = name;
             this.isNegative = isNegative;
+        }
+
+        public void Init(string line, ref List<string> depedencies)
+        {
+            Init(line);
+            depedencies.Add(name);
+        }
+
+        public void Init(string line)
+        {
+            isNegative = Regex.IsMatch(line, "^-.+$");
+            if (isNegative) { line = line.Substring(1); }
+            name = line;
         }
 
         public float GetValue()

@@ -27,7 +27,8 @@ namespace CetchUp.CetchLines
             modifiedValue = Regex.Replace(groups[1].Value,@"\s","");
             isMultiplier = groups[2].Value == "%";
             dependencies = new List<string>();
-            equation = new EEequation(groups[3].Value, ref dependencies);
+            equation = new EEequation();
+            equation.Init(groups[3].Value, ref dependencies);
         }
 
         public EquationLine(string modifiedValue, EEequation equation, List<string> dependencies, bool isMultiplier)

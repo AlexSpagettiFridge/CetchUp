@@ -4,12 +4,20 @@ using System.Text.RegularExpressions;
 
 namespace CetchUp.EquationElements
 {
-    public class EEfunction : IEquationElement
+    internal class EEfunction : IEquationElement
     {
         private FunctionType functionType;
         private IEquationElement innerElement;
 
-        public EEfunction(string line, ref List<string> dependencies)
+        public EEfunction() { }
+
+        internal EEfunction(FunctionType functionType, IEquationElement innerElement)
+        {
+            this.functionType = functionType;
+            this.innerElement = innerElement;
+        }
+
+        public void Init(string line, ref List<string> dependencies)
         {
             Match match = Regex.Match(line, @"^(Round|Floor|Ceil)\((.*)\)$");
             switch (match.Groups[1].Value)
@@ -21,9 +29,15 @@ namespace CetchUp.EquationElements
             innerElement = EquationHelper.CreateEquationElementFromLine(match.Groups[2].Value, ref dependencies);
         }
 
+        public void Init(string line)
+        {
+            List<string> unnecessaryList = new List<string>();
+            Init(line, ref unnecessaryList);
+        }
+
         public object Clone()
         {
-            throw new System.NotImplementedException();
+            return new EEfunction(functionType, (IEquationElement)innerElement.Clone());
         }
 
         public float GetValue()
