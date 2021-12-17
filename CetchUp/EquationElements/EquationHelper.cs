@@ -7,25 +7,56 @@ namespace CetchUp.EquationElements
 {
     internal static class EquationHelper
     {
+        /// <summary>
+        /// A collection of Expression strings needed to identify the different 
+        /// <see cref="CetchUp.EquationElements.IEquationElement"/>.
+        /// Also a nice alliteration
+        /// </summary>
+        /// <value></value>
+        private static Dictionary<Type, string> EquationElementExpressions = new Dictionary<Type, string>{
+            {typeof(EEfunction), @"(Round|Floor|Ceil)\(.*\)"},
+            {typeof(EEequation), @"\(.*\)"},
+            {typeof(EEsymbol), @"[+\-*\/]"},
+            {typeof(EEvariable), "-?#?[A-z_]+"},
+            {typeof(EEconstant), @"[0-9\.]+"},
+        };
+
+        public static string CombinedEquationElementExpression{
+            get{
+                string expression = "";
+                int i=0;
+                foreach(string eee in EquationElementExpressions.Values)
+                {
+                    expression+=eee;
+                    i++;
+                    if (i<EquationElementExpressions.Count)
+                    {
+                        expression+="|";
+                    }
+                }
+                return expression;
+            }
+        }
+
         public static IEquationElement CreateEquationElementFromLine(string line, ref List<string> dependencies)
         {
-            if (Regex.IsMatch(line, @"^(Round|Floor|Ceil)\(.*\)$"))
+            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEfunction)]}$"))
             {
                 return new EEfunction(line, ref dependencies);
             }
-            if (Regex.IsMatch(line, @"^\(.*\)$"))
+            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEequation)]}$"))
             {
                 return new EEequation(line.Substring(1, line.Length - 2), ref dependencies);
             }
-            if (Regex.IsMatch(line, "^#*[A-z_]*$"))
+            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEvariable)]}$"))
             {
                 return new EEvariable(line, ref dependencies);
             }
-            if (Regex.IsMatch(line, @"^[0-9\.]*$"))
+            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEconstant)]}$"))
             {
                 return new EEconstant(line);
             }
-            if (Regex.IsMatch(line, @"^[+\-*\/]$"))
+            if (Regex.IsMatch(line, $"^{EquationElementExpressions[typeof(EEsymbol)]}$"))
             {
                 return new EEsymbol(line);
             }

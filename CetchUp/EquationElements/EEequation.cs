@@ -29,7 +29,7 @@ namespace CetchUp.EquationElements
 
         private void Init(string line, ref List<string> dependencies)
         {
-            MatchCollection sides = Regex.Matches(line, @"(Round|Floor|Ceil)\((.*)\)|\(.*\)|[*\/+-]|-?#?[A-z_]+|-?[0-9\.]+");
+            MatchCollection sides = Regex.Matches(line, EquationHelper.CombinedEquationElementExpression);
             foreach (Match match in sides)
             {
                 IEquationElement equationElement = EquationHelper.CreateEquationElementFromLine(match.Value, ref dependencies);
