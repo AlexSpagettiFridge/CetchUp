@@ -24,6 +24,12 @@ namespace CetchUp
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref ="CetchModifier"/>
+        /// </summary>
+        /// <param name="genString">
+        /// The genString can either be a raw Cetch Script or a path to an .cetch file.
+        /// </param>
         public CetchModifier(string genString)
         {
             if (Regex.IsMatch(genString, @"^[a-zA-Z0-9\/\\]*\.cetch$"))
