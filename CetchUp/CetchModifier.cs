@@ -17,7 +17,7 @@ namespace CetchUp
         /// <summary>
         /// Reflects the lines read from the CetchLine.
         /// </summary>
-        private List<ICetchLine> lines = new List<ICetchLine>();
+        internal List<ICetchLine> Lines = new List<ICetchLine>();
 
         public CetchModifier()
         {
@@ -51,7 +51,7 @@ namespace CetchUp
         {
             cetchData = cetchData.Replace("\r\n", "").Replace("\n", "").Replace("\r", "");
 
-            lines = GetLinesFromCetchData(ref cetchData);
+            Lines = GetLinesFromCetchData(ref cetchData);
         }
 
         private List<ICetchLine> GetLinesFromCetchData(ref string cetchData)
@@ -87,7 +87,7 @@ namespace CetchUp
         /// <param name="value">The factor everything should be multiplied with.</param>
         public void MultiplyByValue(float value)
         {
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
                 line.ModifyByValue(value);
             }
@@ -95,12 +95,12 @@ namespace CetchUp
 
         /// <summary>
         /// Modifies the given cetchModifierEntry.
-        /// This will apply every <see cref="lines">line</see> inside this CetchModifier.
+        /// This will apply every <see cref="Lines">line</see> inside this CetchModifier.
         /// </summary>
         /// <param name="cetchModifierEntry">The CetchModifierEntry that should be modified</param>
         public void ModifyCetchObject(CetchModifierEntry cetchModifierEntry)
         {
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
                 line.JoinObject(cetchModifierEntry);
             }
@@ -113,7 +113,7 @@ namespace CetchUp
         /// <param name="value">The constant value the variables should be replaced with.</param>
         public void InsertVariable(string varName, float value)
         {
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
                 line.InsertVariable(varName, value);
             }
@@ -121,7 +121,7 @@ namespace CetchUp
 
         public void RemoveFromCetchObject(CetchModifierEntry cetchModifierEntry)
         {
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
                 line.Remove(cetchModifierEntry);
             }
@@ -129,7 +129,7 @@ namespace CetchUp
 
         public void TryShorten()
         {
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
                 if (line is EquationLine)
                 {
@@ -141,10 +141,10 @@ namespace CetchUp
         public override string ToString()
         {
             string result = "";
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
                 result += $"{line.ToString()}";
-                if (line != lines[lines.Count - 1]) { result += "\n"; }
+                if (line != Lines[Lines.Count - 1]) { result += "\n"; }
             }
             return result;
         }
@@ -152,9 +152,9 @@ namespace CetchUp
         public object Clone()
         {
             CetchModifier clone = new CetchModifier();
-            foreach (ICetchLine line in lines)
+            foreach (ICetchLine line in Lines)
             {
-                clone.lines.Add((ICetchLine)line.Clone());
+                clone.Lines.Add((ICetchLine)line.Clone());
             }
             return clone;
         }
@@ -165,9 +165,9 @@ namespace CetchUp
             List<ConditionLine> conditionLines = new List<ConditionLine>();
             Dictionary<string, List<EEequation>> variableSpecificEquations = new Dictionary<string, List<EEequation>>();
             Dictionary<string, List<EEequation>> variableSpecificModEquations = new Dictionary<string, List<EEequation>>();
-            ICetchLine[] totalLines = new ICetchLine[a.lines.Count + b.lines.Count];
-            a.lines.CopyTo(totalLines);
-            b.lines.CopyTo(totalLines, a.lines.Count);
+            ICetchLine[] totalLines = new ICetchLine[a.Lines.Count + b.Lines.Count];
+            a.Lines.CopyTo(totalLines);
+            b.Lines.CopyTo(totalLines, a.Lines.Count);
             foreach (ICetchLine line in totalLines)
             {
                 if (line is ConditionLine)
@@ -202,7 +202,7 @@ namespace CetchUp
                     List<EEequation> equationLines = varList[specificVariable];
                     if (equationLines.Count == 1)
                     {
-                        c.lines.Add(new EquationLine(specificVariable, equationLines[0], equationLines[0].GetAllDependencies(), true));
+                        c.Lines.Add(new EquationLine(specificVariable, equationLines[0], equationLines[0].GetAllDependencies(), true));
                         continue;
                     }
                     ArrayList allEquations = new ArrayList();
@@ -217,12 +217,14 @@ namespace CetchUp
                     }
                     EEequation totalEquation = new EEequation(allEquations);
                     totalEquation.TryShorten();
-                    c.lines.Add(new EquationLine(specificVariable, totalEquation, dependencies, varList == variableSpecificModEquations));
+                    c.Lines.Add(new EquationLine(specificVariable, totalEquation, dependencies, varList == variableSpecificModEquations));
                 }
                 if (varList == variableSpecificModEquations) { break; }
                 varList = variableSpecificModEquations;
             }
             return c;
         }
+
+        
     }
 }

@@ -129,5 +129,13 @@ namespace CetchUp.CetchLines
                 line.InsertVariable(varName, value);
             }
         }
+
+        public void GetEffectedValues(CetchModifierEntry cetchModifierEntry, ref List<CetchValue> valueList)
+        {
+            foreach (ICetchLine line in InnerLines)
+            {
+                line.GetEffectedValues(cetchModifierEntry, ref valueList);
+            }
+        }
     }
 }

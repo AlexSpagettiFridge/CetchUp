@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace CetchUp
 {
     /// <summary>
@@ -24,6 +26,24 @@ namespace CetchUp
         {
             this.cetchUpObject = cetchUpObject;
             this.cetchModifier = cetchModifier;
+        }
+
+        public List<CetchValue> GetEffectedValues()
+        {
+            List<CetchValue> result = new List<CetchValue>();
+            foreach (ICetchLine line in CetchModifier.Lines)
+            {
+                line.GetEffectedValues(this, ref result);
+            }
+            return result;
+        }
+
+        internal void GetEffectedValues(ref List<CetchValue> effectedValues)
+        {
+            foreach (ICetchLine line in CetchModifier.Lines)
+            {
+                line.GetEffectedValues(this, ref effectedValues);
+            }
         }
     }
 }

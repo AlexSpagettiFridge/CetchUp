@@ -24,7 +24,7 @@ namespace CetchUp.CetchLines
         {
             GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%])(.*)").Groups;
 
-            modifiedValue = Regex.Replace(groups[1].Value,@"\s","");
+            modifiedValue = Regex.Replace(groups[1].Value, @"\s", "");
             isMultiplier = groups[2].Value == "%";
             dependencies = new List<string>();
             equation = new EEequation();
@@ -124,7 +124,13 @@ namespace CetchUp.CetchLines
 
         public void InsertVariable(string varName, float value)
         {
-            equation.InsertVariable(varName,value);
+            equation.InsertVariable(varName, value);
+        }
+
+        public void GetEffectedValues(CetchModifierEntry cetchModifierEntry, ref List<CetchValue> valueList)
+        {
+            CetchValue cetchValue = cetchModifierEntry.GetCetchValue(modifiedValue);
+            if (valueList.Contains(cetchValue)) { valueList.Add(cetchValue); }
         }
     }
 }

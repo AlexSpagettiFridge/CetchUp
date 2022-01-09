@@ -86,5 +86,31 @@ namespace CetchUp
                 this.newValue = newValue;
             }
         }
+
+        public List<CetchValue> GetEffectedValues()
+        {
+            List<CetchValue> result = new List<CetchValue>();
+            foreach (CetchModifierEntry modifierEntry in modifierEntries)
+            {
+                modifierEntry.GetEffectedValues(ref result);
+            }
+            return result;
+        }
+
+        public void AddCetchUpObject(CetchUpObject addedObject)
+        {
+            foreach (CetchValue cetchValue in addedObject.GetEffectedValues())
+            {
+                GetCetchValue(cetchValue.Name).BaseValue += cetchValue.Total;
+            }
+        }
+
+        public void SubtractCetchUpObject(CetchUpObject subtractedObject)
+        {
+            foreach (CetchValue cetchValue in subtractedObject.GetEffectedValues())
+            {
+                GetCetchValue(cetchValue.Name).BaseValue -= cetchValue.Total;
+            }
+        }
     }
 }
