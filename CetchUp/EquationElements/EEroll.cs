@@ -32,10 +32,10 @@ namespace CetchUp.EquationElements
         {
             if (rollResult == null)
             {
-                int totalRoll = 0;
+                rollResult = 0;
                 for (int i = 0; i < diceAmount; i++)
                 {
-                    totalRoll += new Random().Next(1, diceSize);
+                    rollResult += new Random().Next(1, diceSize);
                 }
             }
             return (int)rollResult;
