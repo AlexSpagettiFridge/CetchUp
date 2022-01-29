@@ -47,5 +47,10 @@ namespace CetchUp.EquationElements
                 rollResult += new Random().Next(1, diceSize);
             }
         }
+
+        public override string ToString()
+        {
+            return $"{diceAmount}d{diceSize}";
+        }
     }
 }
