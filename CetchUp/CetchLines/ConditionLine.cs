@@ -137,5 +137,13 @@ namespace CetchUp.CetchLines
                 line.GetEffectedValues(cetchModifierEntry, ref valueList);
             }
         }
+
+        public void Reroll(CetchModifierEntry cetchModifierEntry)
+        {
+            foreach (ICetchLine line in InnerLines)
+            {
+                line.Reroll(cetchModifierEntry);
+            }
+        }
     }
 }

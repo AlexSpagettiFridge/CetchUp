@@ -112,5 +112,16 @@ namespace CetchUp
                 GetCetchValue(cetchValue.Name).BaseValue -= cetchValue.Total;
             }
         }
+
+        /// <summary>
+        /// Reroll all rolls inside all <see cref="CetchUp.CetchModifier"> applied to this <see cref="CetchUp.CetchUpObject">
+        /// </summary>
+        public void Reroll()
+        {
+            foreach(CetchModifierEntry entry in modifierEntries)
+            {
+                entry.Reroll();
+            }
+        }
     }
 }

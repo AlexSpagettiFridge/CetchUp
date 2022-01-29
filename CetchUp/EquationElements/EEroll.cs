@@ -32,15 +32,20 @@ namespace CetchUp.EquationElements
         {
             if (rollResult == null)
             {
-                rollResult = 0;
-                for (int i = 0; i < diceAmount; i++)
-                {
-                    rollResult += new Random().Next(1, diceSize);
-                }
+                Reroll();
             }
             return (int)rollResult;
         }
 
         public float GetValue(CetchModifierEntry cetchModifierEntry) => GetValue();
+
+        public void Reroll()
+        {
+            rollResult = 0;
+            for (int i = 0; i < diceAmount; i++)
+            {
+                rollResult += new Random().Next(1, diceSize);
+            }
+        }
     }
 }

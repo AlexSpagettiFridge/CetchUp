@@ -32,11 +32,13 @@ namespace CetchUp.EquationElements
             throw new System.NotImplementedException();
         }
 
-        public object Clone() => new EEsymbol(symbol); 
+        public object Clone() => new EEsymbol(symbol);
 
         public override string ToString()
         {
             return symbol.ToString();
         }
+
+        public void Reroll() { }
     }
 }

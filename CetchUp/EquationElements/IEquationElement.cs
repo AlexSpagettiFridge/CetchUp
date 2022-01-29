@@ -9,5 +9,6 @@ namespace CetchUp.EquationElements
         void Init(string line);
         float GetValue();
         float GetValue(CetchModifierEntry cetchModifierEntry);
+        void Reroll();
     }
 }

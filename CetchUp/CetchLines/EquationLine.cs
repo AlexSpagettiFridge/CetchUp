@@ -132,5 +132,16 @@ namespace CetchUp.CetchLines
             CetchValue cetchValue = cetchModifierEntry.GetCetchValue(modifiedValue);
             if (valueList.Contains(cetchValue)) { valueList.Add(cetchValue); }
         }
+
+        public void Reroll(CetchModifierEntry cetchModifierEntry)
+        {
+            equation.Reroll();
+            CetchValueCollection valueCollection = cetchModifierEntry;
+            if (!isValueLocal)
+            {
+                valueCollection = cetchModifierEntry.CetchUpObject;
+            }
+            valueCollection.GetCetchValue(modifiedValue).ModifyValue(this);
+        }
     }
 }

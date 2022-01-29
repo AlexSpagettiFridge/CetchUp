@@ -360,5 +360,13 @@ namespace CetchUp.EquationElements
             }
             return result;
         }
+
+        public void Reroll()
+        {
+            foreach(IEquationElement element in elements)
+            {
+                element.Reroll();
+            }
+        }
     }
 }

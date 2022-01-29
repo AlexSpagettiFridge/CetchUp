@@ -38,6 +38,17 @@ namespace CetchUp
             return result;
         }
 
+        /// <summary>
+        /// Reroll all rolls inside the <see cref="CetchUp.CetchModifier"/>
+        /// </summary>
+        public void Reroll()
+        {
+            foreach(ICetchLine line in CetchModifier.Lines)
+            {
+                line.Reroll(this);
+            }
+        }
+
         internal void GetEffectedValues(ref List<CetchValue> effectedValues)
         {
             foreach (ICetchLine line in CetchModifier.Lines)

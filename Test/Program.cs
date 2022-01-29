@@ -13,7 +13,11 @@ namespace Test
             CetchModifierRepository repository = new CetchModifierRepository();
             repository.AddDirectory("testfiles/");
 
-            cetchUpObject.ApplyModifier(repository["Rolls"]);
+            CetchModifierEntry test = cetchUpObject.ApplyModifier(repository["Rolls"]);
+            Console.WriteLine(cetchUpObject.GetValue("x"));
+            test.Reroll();
+            Console.WriteLine(cetchUpObject.GetValue("x"));
+            cetchUpObject.Reroll();
             Console.WriteLine(cetchUpObject.GetValue("x"));
         }
     }

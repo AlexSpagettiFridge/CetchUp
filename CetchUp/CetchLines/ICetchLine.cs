@@ -10,5 +10,6 @@ namespace CetchUp
         void ModifyByValue(float value);
         void InsertVariable(string varName, float value);
         void GetEffectedValues(CetchModifierEntry cetchModifierEntry, ref List<CetchValue> valueList);
+        void Reroll(CetchModifierEntry cetchModifierEntry);
     }
 }

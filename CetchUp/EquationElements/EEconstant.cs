@@ -43,5 +43,7 @@ namespace CetchUp.EquationElements
         {
             return value.ToString();
         }
+
+        public void Reroll() { }
     }
 }

@@ -62,6 +62,8 @@ namespace CetchUp.EquationElements
             }
         }
 
+        public void Reroll() { }
+
         public enum FunctionType
         {
             Round, Floor, Ceil

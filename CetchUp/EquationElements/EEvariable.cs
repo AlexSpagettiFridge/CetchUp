@@ -49,5 +49,7 @@ namespace CetchUp.EquationElements
         {
             return (isNegative ? "-" : "") + name;
         }
+
+        public void Reroll() { }
     }
 }
