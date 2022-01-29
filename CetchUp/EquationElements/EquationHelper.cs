@@ -18,7 +18,7 @@ namespace CetchUp.EquationElements
             {typeof(EEequation), @"\(.*\)"},
             {typeof(EEsymbol), @"[+\-*\/]"},
             {typeof(EEroll), "[0-9]+d[0-9]+"},
-            {typeof(EEvariable), "-?#?[A-z_]+"},
+            {typeof(EEvariable), @"-?(\@[0-9]*\.)?#?[A-z_]+"},
             {typeof(EEconstant), @"[0-9\.]+"},
         };
 
@@ -44,17 +44,17 @@ namespace CetchUp.EquationElements
         public static IEquationElement CreateEquationElementFromLine(string line)
         {
             List<string> unnecesaryDependencies = new List<string>();
-            return CreateEquationElementFromLine(line,ref unnecesaryDependencies);
+            return CreateEquationElementFromLine(line, ref unnecesaryDependencies);
         }
 
         public static IEquationElement CreateEquationElementFromLine(string line, ref List<string> dependencies)
         {
             foreach (KeyValuePair<Type, string> entry in EquationElementExpressions)
             {
-                if (Regex.IsMatch(line,$"^{entry.Value}$"))
+                if (Regex.IsMatch(line, $"^{entry.Value}$"))
                 {
-                    IEquationElement ee = (IEquationElement)entry.Key.GetConstructor(new Type[]{}).Invoke(new object[]{});
-                    ee.Init(line,ref dependencies);
+                    IEquationElement ee = (IEquationElement)entry.Key.GetConstructor(new Type[] { }).Invoke(new object[] { });
+                    ee.Init(line, ref dependencies);
                     return ee;
                 }
             }
@@ -70,16 +70,18 @@ namespace CetchUp.EquationElements
         ///<param name="amount">Receives the multiplicative amount of the variable.</param>
         ///<returns>Returns if the element is a variable of multiplicative of a variable or not.</returns>
         ///</summary>
-        public static bool IsElementVariableMultiplication(IEquationElement element, out string variableName, out float amount)
+        public static bool IsElementVariableMultiplication(IEquationElement element, out string variableName, out float amount, out int referenceId)
         {
             variableName = null;
             amount = 0;
+            referenceId = -1;
 
             if (element is EEvariable)
             {
                 EEvariable variableElement = (EEvariable)element;
                 variableName = variableElement.name;
                 amount = variableElement.isNegative ? -1 : 1;
+                referenceId = variableElement.referenceId;
                 return true;
             }
 
@@ -105,7 +107,7 @@ namespace CetchUp.EquationElements
 
         public static bool IsElementVariableMultiplication(IEquationElement element)
         {
-            return IsElementVariableMultiplication(element, out string variableName, out float amount);
+            return IsElementVariableMultiplication(element, out string variableName, out float amount, out int referenceId);
         }
 
         private static void GetVariableMultiplicationInfo(EEvariable variableElement, EEconstant constantElement, ref string variableName, ref float amount)
@@ -118,21 +120,21 @@ namespace CetchUp.EquationElements
             }
         }
 
-        public static IEquationElement CreateElement(float totalConstant, Dictionary<string, float> variables)
+        public static IEquationElement CreateElement(float totalConstant, Dictionary<KeyValuePair<string, int>, float> variables)
         {
             EEequation newQuation = new EEequation(new ArrayList());
             if (totalConstant != 0)
             {
                 newQuation.elements.Add(new EEconstant(totalConstant));
             }
-            foreach (KeyValuePair<string, float> entry in variables)
+            foreach (KeyValuePair<KeyValuePair<string, int>, float> entry in variables)
             {
                 if (entry.Value == 0) { continue; }
                 if (newQuation.elements.Count != 0)
                 {
                     newQuation.elements.Add(new EEsymbol(entry.Value >= 0 ? '+' : '-'));
                 }
-                EEvariable variableElement = new EEvariable(entry.Key, false);
+                EEvariable variableElement = new EEvariable(entry.Key.Key, false, entry.Key.Value);
                 if (Math.Abs(entry.Value) == 1)
                 {
                     newQuation.elements.Add(variableElement);

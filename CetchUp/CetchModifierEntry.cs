@@ -11,6 +11,7 @@ namespace CetchUp
     {
         private CetchUpObject cetchUpObject;
         private CetchModifier cetchModifier;
+        private CetchUpObject[] referenceObjects;
 
         /// <summary>
         /// A reference to the <see cref="CetchUp.CetchUpObject" it is part of./>
@@ -22,10 +23,13 @@ namespace CetchUp
         /// </summary>
         public CetchModifier CetchModifier => cetchModifier;
 
-        public CetchModifierEntry(CetchUpObject cetchUpObject, CetchModifier cetchModifier)
+        public CetchUpObject[] ReferenceObjects => referenceObjects;
+
+        public CetchModifierEntry(CetchUpObject cetchUpObject, CetchModifier cetchModifier, CetchUpObject[] referenceObjects = null)
         {
             this.cetchUpObject = cetchUpObject;
             this.cetchModifier = cetchModifier;
+            this.referenceObjects = referenceObjects;
         }
 
         public List<CetchValue> GetEffectedValues()

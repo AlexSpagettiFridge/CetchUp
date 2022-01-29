@@ -28,9 +28,9 @@ namespace CetchUp
         /// This way the CetchValues inside this CetchUpObject will be modified.
         /// </summary>
         /// <param name="modifier">The modifier that should be applied.</param>
-        public CetchModifierEntry ApplyModifier(CetchModifier modifier)
+        public CetchModifierEntry ApplyModifier(CetchModifier modifier, CetchUpObject[] references = null)
         {
-            CetchModifierEntry entry = new CetchModifierEntry(this, modifier);
+            CetchModifierEntry entry = new CetchModifierEntry(this, modifier,references);
             modifierEntries.Add(entry);
             modifier.ModifyCetchObject(entry);
             entry.valueChanged += OnLocalValueChanged;

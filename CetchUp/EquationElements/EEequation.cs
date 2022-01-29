@@ -26,9 +26,9 @@ namespace CetchUp.EquationElements
 
         public void Init(string line, ref List<string> dependencies)
         {
-            if (Regex.IsMatch(line,@"^\(.*\)$"))
+            if (Regex.IsMatch(line, @"^\(.*\)$"))
             {
-                line = Regex.Replace(line,@"^\(|\)$","");
+                line = Regex.Replace(line, @"^\(|\)$", "");
             }
             MatchCollection sides = Regex.Matches(line, EquationHelper.CombinedEquationElementExpression);
             foreach (Match match in sides)
@@ -173,9 +173,10 @@ namespace CetchUp.EquationElements
         {
             a.TryShorten();
             ArrayList elements = new ArrayList();
-            if (EquationHelper.IsElementVariableMultiplication(a, out string variableName, out float amount))
+            if (EquationHelper.IsElementVariableMultiplication(a, out string variableName, out float amount, out int referenceId))
             {
-                elements.Add(EquationHelper.CreateElement(0, new Dictionary<string, float> { { variableName, amount * b } }));
+                elements.Add(EquationHelper.CreateElement(0, new Dictionary<KeyValuePair<string, int>, float>
+                { { new KeyValuePair<string, int>(variableName,referenceId), amount * b } }));
             }
             else
             {
@@ -189,7 +190,8 @@ namespace CetchUp.EquationElements
                     if (element is EEvariable)
                     {
                         EEvariable variableElement = (EEvariable)element;
-                        elements.Add(EquationHelper.CreateElement(0, new Dictionary<string, float> { { variableElement.name, b } }));
+                        elements.Add(EquationHelper.CreateElement(0, new Dictionary<KeyValuePair<string, int>, float>
+                        { { new KeyValuePair<string,int>(variableElement.name,variableElement.referenceId), b } }));
                         continue;
                     }
                     if (element is EEequation)
@@ -262,7 +264,7 @@ namespace CetchUp.EquationElements
             float totalConstant = 0;
             bool isNegative = false;
             ArrayList newElements = new ArrayList();
-            Dictionary<string, float> variables = new Dictionary<string, float>();
+            Dictionary<KeyValuePair<string, int>, float> variables = new Dictionary<KeyValuePair<string, int>, float>();
             for (int i = 0; i < elements.Count; i++)
             {
                 if (elements[i] is EEsymbol)
@@ -273,7 +275,7 @@ namespace CetchUp.EquationElements
                         newElements.Add(EquationHelper.CreateElement(totalConstant, variables));
                         totalConstant = 0;
                         groupStartIndex = i + 1;
-                        variables = new Dictionary<string, float>();
+                        variables = new Dictionary<KeyValuePair<string, int>, float>();
                         newElements.Add(((IEquationElement)elements[i]).Clone());
                         continue;
                     }
@@ -302,14 +304,15 @@ namespace CetchUp.EquationElements
                         continue;
                     }
                 }
-                if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i], out string variableName, out float amount))
+                if (EquationHelper.IsElementVariableMultiplication((IEquationElement)elements[i],
+                out string variableName, out float amount, out int referenceId))
                 {
-                    if (!variables.ContainsKey(variableName))
+                    if (!variables.ContainsKey(new KeyValuePair<string, int>(variableName, referenceId)))
                     {
-                        variables.Add(variableName, 0);
+                        variables.Add(new KeyValuePair<string, int>(variableName, referenceId), 0);
                     }
                     if (isNegative) { amount *= -1; }
-                    variables[variableName] += amount;
+                    variables[new KeyValuePair<string, int>(variableName, referenceId)] += amount;
                     continue;
                 }
                 newElements.Add(((IEquationElement)elements[i]).Clone());
@@ -363,7 +366,7 @@ namespace CetchUp.EquationElements
 
         public void Reroll()
         {
-            foreach(IEquationElement element in elements)
+            foreach (IEquationElement element in elements)
             {
                 element.Reroll();
             }

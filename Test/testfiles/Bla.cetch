@@ -1,3 +1,0 @@
-#yep = coolness + 2;
-endurance = 5 * (1 + 1);
-smellResistance = 3 * #yep;
