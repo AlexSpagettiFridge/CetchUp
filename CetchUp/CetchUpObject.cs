@@ -97,22 +97,6 @@ namespace CetchUp
             return result;
         }
 
-        public void AddCetchUpObject(CetchUpObject addedObject)
-        {
-            foreach (CetchValue cetchValue in addedObject.GetEffectedValues())
-            {
-                GetCetchValue(cetchValue.Name).BaseValue += cetchValue.Total;
-            }
-        }
-
-        public void SubtractCetchUpObject(CetchUpObject subtractedObject)
-        {
-            foreach (CetchValue cetchValue in subtractedObject.GetEffectedValues())
-            {
-                GetCetchValue(cetchValue.Name).BaseValue -= cetchValue.Total;
-            }
-        }
-
         /// <summary>
         /// Reroll all rolls inside all <see cref="CetchUp.CetchModifier"> applied to this <see cref="CetchUp.CetchUpObject">
         /// </summary>
