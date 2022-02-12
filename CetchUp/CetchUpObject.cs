@@ -4,7 +4,7 @@ using CetchUp.EquationElements;
 
 namespace CetchUp
 {
-    public class CetchUpObject : CetchValueCollection
+    public class CetchUpObject : CetchValueCollection, ICloneable
     {
         private List<CetchModifierEntry> modifierEntries = new List<CetchModifierEntry>();
         private event EventHandler<LocalValueChangedEventArgs> localValueChanged;
@@ -30,7 +30,7 @@ namespace CetchUp
         /// <param name="modifier">The modifier that should be applied.</param>
         public CetchModifierEntry ApplyModifier(CetchModifier modifier, CetchUpObject[] references = null)
         {
-            CetchModifierEntry entry = new CetchModifierEntry(this, modifier,references);
+            CetchModifierEntry entry = new CetchModifierEntry(this, modifier, references);
             modifierEntries.Add(entry);
             modifier.ModifyCetchObject(entry);
             entry.valueChanged += OnLocalValueChanged;
@@ -102,10 +102,20 @@ namespace CetchUp
         /// </summary>
         public void Reroll()
         {
-            foreach(CetchModifierEntry entry in modifierEntries)
+            foreach (CetchModifierEntry entry in modifierEntries)
             {
                 entry.Reroll();
             }
+        }
+
+        public object Clone()
+        {
+            CetchUpObject clone = new CetchUpObject();
+            foreach (CetchModifierEntry entry in modifierEntries)
+            {
+                clone.ApplyModifier(entry.CetchModifier, entry.ReferenceObjects);
+            }
+            return clone;
         }
     }
 }
