@@ -86,7 +86,7 @@ namespace CetchUp.CetchLines
 
         public void OnRelevantValueChanged(object sender, CetchValue.ChangedEventArgs args)
         {
-            CheckConditionsForObject(args.cetchModifierEntry);
+            CheckConditionsForObject((CetchModifierEntry)args.cetchModifierCollection);
         }
 
         private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)

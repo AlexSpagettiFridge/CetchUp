@@ -104,10 +104,10 @@ namespace CetchUp.CetchLines
 
         public void OnVariableChanged(object sender, CetchValue.ChangedEventArgs args)
         {
-            CetchValueCollection valueCollection = args.cetchModifierEntry;
-            if (!isValueLocal)
+            CetchValueCollection valueCollection = args.cetchModifierCollection;
+            if (!isValueLocal && args.cetchModifierCollection is CetchModifierEntry cetchModifierEntry)
             {
-                valueCollection = args.cetchModifierEntry.CetchUpObject;
+                valueCollection = cetchModifierEntry.CetchUpObject;
             }
             valueCollection.GetCetchValue(modifiedValue).ModifyValue(this);
         }

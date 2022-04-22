@@ -24,7 +24,7 @@ namespace CetchUp
             set
             {
                 baseValue = value;
-                if (changed != null) { changed.Invoke(this, new ChangedEventArgs(null, Total)); }
+                if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
             }
         }
 
@@ -91,11 +91,11 @@ namespace CetchUp
         public class ChangedEventArgs : EventArgs
         {
             public float newValue;
-            public CetchModifierEntry cetchModifierEntry;
+            public CetchValueCollection cetchModifierCollection;
 
-            public ChangedEventArgs(CetchModifierEntry cetchModifierEntry, float newValue)
+            public ChangedEventArgs(CetchValueCollection cetchModifierEntry, float newValue)
             {
-                this.cetchModifierEntry = cetchModifierEntry;
+                this.cetchModifierCollection = cetchModifierEntry;
                 this.newValue = newValue;
             }
         }
