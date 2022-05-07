@@ -33,7 +33,7 @@ namespace CetchUp
             CetchModifierEntry entry = new CetchModifierEntry(this, modifier, references);
             modifierEntries.Add(entry);
             modifier.ModifyCetchObject(entry);
-            entry.valueChanged += OnLocalValueChanged;
+            entry.ValueChanged += OnLocalValueChanged;
             return entry;
         }
 
@@ -51,7 +51,7 @@ namespace CetchUp
                 {
                     modifier.RemoveFromCetchObject(entry);
                     modifierEntries.Remove(entry);
-                    entry.valueChanged -= OnLocalValueChanged;
+                    entry.ValueChanged -= OnLocalValueChanged;
                     return true;
                 }
             }

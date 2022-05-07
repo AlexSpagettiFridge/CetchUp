@@ -9,6 +9,7 @@ namespace Test
         {
             Console.WriteLine("Doing it...");
             CetchUpObject cetchUpObject = new CetchUpObject();
+            cetchUpObject.ValueChanged+=OnValueChanged;
 
             CetchModifierRepository repository = new CetchModifierRepository();
             repository.AddDirectory("testfiles/");
@@ -16,6 +17,11 @@ namespace Test
             cetchUpObject.ApplyModifier(repository["BaseValueTest"]);
             cetchUpObject.GetCetchValue("bla").BaseValue += 3;
             Console.WriteLine(cetchUpObject.GetValue("yee"));
+        }
+
+        private static void OnValueChanged(object sender,CetchValueCollection.ValueChangedEventArgs args)
+        {
+            Console.WriteLine("yeah");
         }
     }
 }

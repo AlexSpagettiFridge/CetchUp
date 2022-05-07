@@ -28,7 +28,7 @@ namespace CetchUp.CetchLines
         {
             foreach (CetchValue dependency in GetDependentValues(cetchModifierEntry))
             {
-                dependency.changed += OnRelevantValueChanged;
+                dependency.Changed += OnRelevantValueChanged;
             }
             CheckConditionsForObject(cetchModifierEntry);
         }

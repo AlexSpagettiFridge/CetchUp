@@ -49,7 +49,7 @@ namespace CetchUp.CetchLines
             cetchValue.ModifyValue(this);
             foreach (CetchValue depVariable in GetDependentValues(cetchModifierEntry))
             {
-                depVariable.changed += OnVariableChanged;
+                depVariable.Changed += OnVariableChanged;
             }
         }
 
@@ -57,7 +57,7 @@ namespace CetchUp.CetchLines
         {
             foreach (CetchValue depVariable in GetDependentValues(cetchModifierEntry))
             {
-                depVariable.changed -= OnVariableChanged;
+                depVariable.Changed -= OnVariableChanged;
             }
             if (removed != null) { removed.Invoke(this, this); }
         }

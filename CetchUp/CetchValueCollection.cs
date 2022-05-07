@@ -9,7 +9,7 @@ namespace CetchUp
     public abstract class CetchValueCollection
     {
         internal Dictionary<string, CetchValue> values = new Dictionary<string, CetchValue>();
-        public event EventHandler<ValueChangedEventArgs> valueChanged;
+        public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
         public virtual float GetValue(string valueName, bool initWhenUnavailable = true)
         {
@@ -24,24 +24,27 @@ namespace CetchUp
                 {
                     throw new KeyNotFoundException(valueName);
                 }
+                CetchValue newCetchValue;
                 if (this is CetchUpObject)
                 {
-                    values.Add(valueName, new CetchValue((CetchUpObject)this, valueName, 0));
+                    newCetchValue = new CetchValue((CetchUpObject)this, valueName, 0);
                 }
                 else
                 {
-                    values.Add(valueName, new CetchValue(((CetchModifierEntry)this).CetchUpObject, valueName, 0));
+                    newCetchValue = new CetchValue(((CetchModifierEntry)this).CetchUpObject, valueName, 0);
                 }
 
+                values.Add(valueName, newCetchValue);
+                newCetchValue.Changed += OnValueChanged;
             }
             return values[valueName];
         }
 
         private void OnValueChanged(object sender, CetchValue.ChangedEventArgs args)
         {
-            if (valueChanged != null)
+            if (ValueChanged != null)
             {
-                valueChanged.Invoke(this, new ValueChangedEventArgs((CetchValue)sender, args.newValue));
+                ValueChanged.Invoke(this, new ValueChangedEventArgs((CetchValue)sender, args.newValue));
             }
         }
 

@@ -14,9 +14,9 @@ namespace CetchUp
         private List<ValueModEntry> valueMods = new List<ValueModEntry>();
 
         public string Name => name;
-        public float Total { get => (baseValue + value) * multiplier; set => baseValue = (value - this.value) / multiplier; }
+        public float Total { get => (baseValue + value) * multiplier; set => BaseValue = (value - this.value) / multiplier; }
         public float Multiplier => multiplier;
-        public event EventHandler<ChangedEventArgs> changed;
+        public event EventHandler<ChangedEventArgs> Changed;
 
         public float BaseValue
         {
@@ -24,7 +24,7 @@ namespace CetchUp
             set
             {
                 baseValue = value;
-                if (changed != null) { changed.Invoke(this, new ChangedEventArgs(cetchUpObject, Total)); }
+                Changed?.Invoke(this, new ChangedEventArgs(cetchUpObject, Total));
             }
         }
 
@@ -63,7 +63,7 @@ namespace CetchUp
                 value += modVValue;
             }
             entry.value = modVValue;
-            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(entry.origin, Total)); }
+            Changed?.Invoke(this, new ChangedEventArgs(entry.origin, Total));
         }
 
         internal void AddModedValue(EquationLine equation, CetchModifierEntry cetchModifierEntry)
@@ -85,7 +85,7 @@ namespace CetchUp
             }
             modedValue.removed -= OnModedValueRemoved;
             valueMods.Remove(entry);
-            if (changed != null) { changed.Invoke(this, new ChangedEventArgs(entry.origin, Total)); }
+            if (Changed != null) { Changed.Invoke(this, new ChangedEventArgs(entry.origin, Total)); }
         }
 
         public class ChangedEventArgs : EventArgs
