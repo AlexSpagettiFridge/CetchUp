@@ -89,7 +89,7 @@ namespace CetchUp
 
         private int CountValuePartMods(ValuePart part)
         {
-            return valueMods.Count<ValueModEntry>((ValueModEntry x) => x.valuePart == ValuePart.Min);
+            return valueMods.Count<ValueModEntry>((ValueModEntry x) => x.valuePart == part);
         }
 
         private float ClampValue(float value)

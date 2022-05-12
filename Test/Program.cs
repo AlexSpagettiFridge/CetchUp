@@ -15,7 +15,8 @@ namespace Test
 
             cetchUpObject.ApplyModifier(repository["MinMaxA"]);
             Console.WriteLine(cetchUpObject.GetValue("oink"));
-            Console.WriteLine(cetchUpObject.GetValue("oimk"));
+            Console.WriteLine(cetchUpObject.GetValue("hitPoints"));
+            Console.WriteLine(cetchUpObject.GetCetchValue("hitPoints").Max);
             cetchUpObject.ApplyModifier(repository["MinMaxB"]);
             Console.WriteLine(cetchUpObject.GetValue("oink"));
             cetchUpObject.GetCetchValue("oink").Total-=15;
