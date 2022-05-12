@@ -9,19 +9,21 @@ namespace Test
         {
             Console.WriteLine("Doing it...");
             CetchUpObject cetchUpObject = new CetchUpObject();
-            cetchUpObject.ValueChanged+=OnValueChanged;
 
             CetchModifierRepository repository = new CetchModifierRepository();
             repository.AddDirectory("testfiles/");
 
-            cetchUpObject.ApplyModifier(repository["BaseValueTest"]);
-            cetchUpObject.GetCetchValue("bla").BaseValue += 3;
-            Console.WriteLine(cetchUpObject.GetValue("yee"));
+            cetchUpObject.ApplyModifier(repository["MinMaxA"]);
+            Console.WriteLine(cetchUpObject.GetValue("oink"));
+            cetchUpObject.ApplyModifier(repository["MinMaxB"]);
+            Console.WriteLine(cetchUpObject.GetValue("oink"));
+            cetchUpObject.GetCetchValue("oink").Total-=15;
+            Console.WriteLine(cetchUpObject.GetValue("oink"));
+            cetchUpObject.TryRemoveModifier(repository["MinMaxA"]);
+            Console.WriteLine(cetchUpObject.GetValue("oink"));
+            cetchUpObject.GetCetchValue("oink").Total+=20;
+            Console.WriteLine(cetchUpObject.GetValue("oink"));
         }
 
-        private static void OnValueChanged(object sender,CetchValueCollection.ValueChangedEventArgs args)
-        {
-            Console.WriteLine("yeah");
-        }
     }
 }

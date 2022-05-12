@@ -72,7 +72,7 @@ namespace CetchUp
                     result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
                     continue;
                 }
-                if (Regex.IsMatch(line, "^.*[=%].*$"))
+                if (Regex.IsMatch(line, "^.*[=%mM].*$"))
                 {
                     result.Add(new EquationLine(line));
                     continue;
@@ -163,8 +163,13 @@ namespace CetchUp
         {
             CetchModifier c = new CetchModifier();
             List<ConditionLine> conditionLines = new List<ConditionLine>();
-            Dictionary<string, List<EEequation>> variableSpecificEquations = new Dictionary<string, List<EEequation>>();
-            Dictionary<string, List<EEequation>> variableSpecificModEquations = new Dictionary<string, List<EEequation>>();
+
+            Dictionary<CetchValue.ValuePart, Dictionary<string, List<EEequation>>> variableSpecificEquations = new Dictionary<CetchValue.ValuePart, Dictionary<string, List<EEequation>>>();
+            foreach (CetchValue.ValuePart valuePart in Enum.GetValues(typeof(CetchValue.ValuePart)))
+            {
+                variableSpecificEquations[valuePart] = new Dictionary<string, List<EEequation>>();
+            }
+
             ICetchLine[] totalLines = new ICetchLine[a.Lines.Count + b.Lines.Count];
             a.Lines.CopyTo(totalLines);
             b.Lines.CopyTo(totalLines, a.Lines.Count);
@@ -179,14 +184,8 @@ namespace CetchUp
                     EquationLine equationLine = (EquationLine)line;
                     string variableName = equationLine.ModifiedValue;
                     Dictionary<string, List<EEequation>> variableList;
-                    if (!equationLine.IsMultiplier)
-                    {
-                        variableList = variableSpecificEquations;
-                    }
-                    else
-                    {
-                        variableList = variableSpecificModEquations;
-                    }
+                    variableList = variableSpecificEquations[equationLine.ValuePart];
+
                     if (!variableList.ContainsKey(variableName))
                     {
                         variableList.Add(variableName, new List<EEequation>());
@@ -194,15 +193,16 @@ namespace CetchUp
                     variableList[variableName].Add(equationLine.Equation);
                 }
             }
-            Dictionary<string, List<EEequation>> varList = variableSpecificEquations;
-            while (true)
+
+            foreach (CetchValue.ValuePart valuePart in Enum.GetValues(typeof(CetchValue.ValuePart)))
             {
+                Dictionary<string, List<EEequation>> varList = variableSpecificEquations[valuePart];
                 foreach (string specificVariable in varList.Keys)
                 {
                     List<EEequation> equationLines = varList[specificVariable];
                     if (equationLines.Count == 1)
                     {
-                        c.Lines.Add(new EquationLine(specificVariable, equationLines[0], equationLines[0].GetAllDependencies(), true));
+                        c.Lines.Add(new EquationLine(specificVariable, equationLines[0], equationLines[0].GetAllDependencies(), valuePart));
                         continue;
                     }
                     ArrayList allEquations = new ArrayList();
@@ -217,14 +217,12 @@ namespace CetchUp
                     }
                     EEequation totalEquation = new EEequation(allEquations);
                     totalEquation.TryShorten();
-                    c.Lines.Add(new EquationLine(specificVariable, totalEquation, dependencies, varList == variableSpecificModEquations));
+                    c.Lines.Add(new EquationLine(specificVariable, totalEquation, dependencies, valuePart));
                 }
-                if (varList == variableSpecificModEquations) { break; }
-                varList = variableSpecificModEquations;
             }
             return c;
         }
 
-        
+
     }
 }

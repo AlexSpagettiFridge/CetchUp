@@ -8,13 +8,13 @@ namespace CetchUp.CetchLines
 {
     internal class EquationLine : ICetchLine
     {
-        private bool isMultiplier = false;
+        private CetchValue.ValuePart valuePart;
         private EEequation equation;
         private bool isValueLocal = false;
         private string modifiedValue;
         private List<string> dependencies;
 
-        public bool IsMultiplier => isMultiplier;
+        public CetchValue.ValuePart ValuePart => valuePart;
         public string ModifiedValue => modifiedValue;
         public EEequation Equation => equation;
 
@@ -22,21 +22,27 @@ namespace CetchUp.CetchLines
 
         public EquationLine(string cetchLine)
         {
-            GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%])(.*)").Groups;
+            GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%mM])(.*)").Groups;
 
             modifiedValue = Regex.Replace(groups[1].Value, @"\s", "");
-            isMultiplier = groups[2].Value == "%";
+            switch (groups[2].Value)
+            {
+                case "=": valuePart = CetchValue.ValuePart.Value; break;
+                case "%": valuePart = CetchValue.ValuePart.Modifier; break;
+                case "m": valuePart = CetchValue.ValuePart.Min; break;
+                case "M": valuePart = CetchValue.ValuePart.Max; break;
+            }
             dependencies = new List<string>();
             equation = new EEequation();
             equation.Init(groups[3].Value, ref dependencies);
         }
 
-        public EquationLine(string modifiedValue, EEequation equation, List<string> dependencies, bool isMultiplier)
+        public EquationLine(string modifiedValue, EEequation equation, List<string> dependencies, CetchValue.ValuePart valuePart)
         {
             this.modifiedValue = modifiedValue;
             this.equation = equation;
             this.dependencies = dependencies;
-            this.isMultiplier = isMultiplier;
+            this.valuePart = valuePart;
         }
 
         public void JoinObject(CetchModifierEntry cetchModifierEntry)
@@ -84,7 +90,7 @@ namespace CetchUp.CetchLines
         {
             List<string> newDependencies = new List<string>();
             foreach (string dep in dependencies) { newDependencies.Add((string)dep.Clone()); }
-            return new EquationLine(modifiedValue, (EEequation)equation.Clone(), newDependencies, isMultiplier);
+            return new EquationLine(modifiedValue, (EEequation)equation.Clone(), newDependencies, valuePart);
         }
 
         private List<CetchValue> GetDependentValues(CetchModifierEntry cetchModifierEntry)

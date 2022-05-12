@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using System.Linq;
 using CetchUp.CetchLines;
 
 namespace CetchUp
@@ -9,12 +10,37 @@ namespace CetchUp
         private readonly CetchUpObject cetchUpObject;
         private readonly string name;
         private float baseValue;
-        private float value = 0;
-        private float multiplier;
+        private float value = 0, multiplier, min, max;
         private List<ValueModEntry> valueMods = new List<ValueModEntry>();
 
         public string Name => name;
-        public float Total { get => (baseValue + value) * multiplier; set => BaseValue = (value - this.value) / multiplier; }
+        public float Total
+        {
+            get => ClampValue((baseValue + value) * multiplier);
+            set
+            {
+                ClampValue(value);
+                BaseValue = (value - this.value) / multiplier;
+            }
+        }
+        public float? Min
+        {
+            get
+            {
+                if (CountValuePartMods(ValuePart.Min) == 0) { return null; }
+                return min;
+            }
+        }
+
+        public float? Max
+        {
+            get
+            {
+                if (CountValuePartMods(ValuePart.Max) == 0) { return null; }
+                return max;
+            }
+        }
+
         public float Multiplier => multiplier;
         public event EventHandler<ChangedEventArgs> Changed;
 
@@ -48,41 +74,56 @@ namespace CetchUp
             throw new KeyNotFoundException(equation.ToString());
         }
 
+        private void ChangeValuePart(ValuePart part, float mod)
+        {
+            switch (part)
+            {
+                case ValuePart.Value: value += mod; break;
+                case ValuePart.Modifier: multiplier += mod; break;
+                case ValuePart.Min: min += mod; break;
+                case ValuePart.Max: max += mod; break;
+            }
+        }
+
+        private int CountValuePartMods(ValuePart part)
+        {
+            return valueMods.Count<ValueModEntry>((ValueModEntry x) => x.valuePart == ValuePart.Min);
+        }
+
+        private float ClampValue(float value)
+        {
+            if (CountValuePartMods(ValuePart.Min) != 0)
+            {
+                value = (float)Math.Max((float)Min, value);
+            }
+            if (CountValuePartMods(ValuePart.Max) != 0)
+            {
+                value = (float)Math.Min((float)Max, value);
+            }
+            return value;
+        }
         internal void ModifyValue(EquationLine modV)
         {
             ValueModEntry entry = GetValueModEntry(modV);
             float modVValue = modV.Calculate(entry.origin);
-            if (modV.IsMultiplier)
-            {
-                multiplier -= entry.value;
-                multiplier += modVValue;
-            }
-            else
-            {
-                value -= entry.value;
-                value += modVValue;
-            }
+            ChangeValuePart(modV.ValuePart, -entry.value);
+            ChangeValuePart(modV.ValuePart, modVValue);
             entry.value = modVValue;
             Changed?.Invoke(this, new ChangedEventArgs(entry.origin, Total));
         }
 
         internal void AddModedValue(EquationLine equation, CetchModifierEntry cetchModifierEntry)
         {
-            valueMods.Add(new ValueModEntry(equation, cetchModifierEntry, 0));
+            valueMods.Add(new ValueModEntry(equation, cetchModifierEntry, 0, equation.ValuePart));
             equation.removed += OnModedValueRemoved;
         }
 
         private void OnModedValueRemoved(object sender, EquationLine modedValue)
         {
             ValueModEntry entry = GetValueModEntry(modedValue);
-            if (modedValue.IsMultiplier)
-            {
-                multiplier -= entry.value;
-            }
-            else
-            {
-                value -= entry.value;
-            }
+
+            ChangeValuePart(modedValue.ValuePart, -entry.value);
+
             modedValue.removed -= OnModedValueRemoved;
             valueMods.Remove(entry);
             if (Changed != null) { Changed.Invoke(this, new ChangedEventArgs(entry.origin, Total)); }
@@ -105,13 +146,20 @@ namespace CetchUp
             public EquationLine equation;
             public CetchModifierEntry origin;
             public float value;
+            public ValuePart valuePart;
 
-            public ValueModEntry(EquationLine equation, CetchModifierEntry origin, float value)
+            public ValueModEntry(EquationLine equation, CetchModifierEntry origin, float value, ValuePart valuePart)
             {
                 this.equation = equation;
                 this.origin = origin;
                 this.value = value;
+                this.valuePart = valuePart;
             }
+        }
+
+        internal enum ValuePart
+        {
+            Value, Modifier, Min, Max
         }
     }
 }
