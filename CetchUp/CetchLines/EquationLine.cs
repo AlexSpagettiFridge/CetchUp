@@ -22,9 +22,9 @@ namespace CetchUp.CetchLines
 
         public EquationLine(string cetchLine)
         {
-            GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%mMoO])(.*)").Groups;
+            GroupCollection groups = Regex.Match(cetchLine, @"(.*)\s+([=%mMoO])\s+(.*)").Groups;
 
-            modifiedValue = Regex.Replace(groups[1].Value, @"\s", "");
+            modifiedValue = groups[1].Value;
             switch (groups[2].Value)
             {
                 case "=": valuePart = CetchValue.ValuePart.Value; break;
