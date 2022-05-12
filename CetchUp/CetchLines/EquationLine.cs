@@ -22,7 +22,7 @@ namespace CetchUp.CetchLines
 
         public EquationLine(string cetchLine)
         {
-            GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%mM])(.*)").Groups;
+            GroupCollection groups = Regex.Match(cetchLine, "(.*)([=%mMoO])(.*)").Groups;
 
             modifiedValue = Regex.Replace(groups[1].Value, @"\s", "");
             switch (groups[2].Value)
@@ -31,6 +31,8 @@ namespace CetchUp.CetchLines
                 case "%": valuePart = CetchValue.ValuePart.Modifier; break;
                 case "m": valuePart = CetchValue.ValuePart.Min; break;
                 case "M": valuePart = CetchValue.ValuePart.Max; break;
+                case "o": valuePart = CetchValue.ValuePart.MinMod; break;
+                case "O": valuePart = CetchValue.ValuePart.MaxMod; break;
             }
             dependencies = new List<string>();
             equation = new EEequation();

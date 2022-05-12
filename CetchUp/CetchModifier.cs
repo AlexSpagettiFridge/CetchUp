@@ -72,7 +72,7 @@ namespace CetchUp
                     result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
                     continue;
                 }
-                if (Regex.IsMatch(line, "^.*[=%mM].*$"))
+                if (Regex.IsMatch(line, "^.*[=%mMoO].*$"))
                 {
                     result.Add(new EquationLine(line));
                     continue;

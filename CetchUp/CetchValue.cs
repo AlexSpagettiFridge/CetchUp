@@ -10,7 +10,7 @@ namespace CetchUp
         private readonly CetchUpObject cetchUpObject;
         private readonly string name;
         private float baseValue;
-        private float value = 0, multiplier, min, max;
+        private float value = 0, multiplier = 1, min = 0, max = 0, minMod = 1, maxMod = 1;
         private List<ValueModEntry> valueMods = new List<ValueModEntry>();
 
         public string Name => name;
@@ -28,7 +28,7 @@ namespace CetchUp
             get
             {
                 if (CountValuePartMods(ValuePart.Min) == 0) { return null; }
-                return min;
+                return min * minMod;
             }
         }
 
@@ -37,7 +37,7 @@ namespace CetchUp
             get
             {
                 if (CountValuePartMods(ValuePart.Max) == 0) { return null; }
-                return max;
+                return max * maxMod;
             }
         }
 
@@ -82,6 +82,8 @@ namespace CetchUp
                 case ValuePart.Modifier: multiplier += mod; break;
                 case ValuePart.Min: min += mod; break;
                 case ValuePart.Max: max += mod; break;
+                case ValuePart.MinMod: minMod += mod; break;
+                case ValuePart.MaxMod: maxMod += mod; break;
             }
         }
 
@@ -159,7 +161,7 @@ namespace CetchUp
 
         internal enum ValuePart
         {
-            Value, Modifier, Min, Max
+            Value, Modifier, Min, Max, MinMod, MaxMod
         }
     }
 }

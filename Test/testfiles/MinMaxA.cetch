@@ -1,2 +1,3 @@
 oink = 0;
-oink M 20;
+oink M 8;
+oink O 1;
