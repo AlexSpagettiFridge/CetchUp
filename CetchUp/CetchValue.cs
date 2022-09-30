@@ -143,21 +143,11 @@ namespace CetchUp
             }
         }
 
-        private class ValueModEntry
-        {
-            public EquationLine equation;
-            public CetchModifierEntry origin;
-            public float value;
-            public ValuePart valuePart;
+        public List<ValueModEntry> GetAllValueModEntries() => valueMods;
+        public IEnumerable<ValueModEntry> GetValueModEntriesWhere(Func<ValueModEntry, bool> predicate) => valueMods.Where<ValueModEntry>(predicate);
+        public IEnumerable<ValueModEntry> GetAllValueModValueModifiers() => GetValueModEntriesWhere((e) => e.equation.ValuePart == ValuePart.Value);
+        public IEnumerable<ValueModEntry> GetAllValueModModifiers() => GetValueModEntriesWhere((e) => e.equation.ValuePart == ValuePart.Modifier);
 
-            public ValueModEntry(EquationLine equation, CetchModifierEntry origin, float value, ValuePart valuePart)
-            {
-                this.equation = equation;
-                this.origin = origin;
-                this.value = value;
-                this.valuePart = valuePart;
-            }
-        }
 
         internal enum ValuePart
         {

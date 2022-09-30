@@ -19,6 +19,8 @@ namespace CetchUp
         /// </summary>
         internal List<ICetchLine> Lines = new List<ICetchLine>();
 
+        public string Name = null;
+
         public CetchModifier()
         {
 
@@ -67,6 +69,11 @@ namespace CetchUp
                 {
                     return result;
                 }
+                if (Regex.IsMatch(line, "^N:.*$"))
+                {
+                    Name = line.Substring(2,line.Length-3);
+                    continue;
+                }
                 if (Regex.IsMatch(line, "^if:.*[<>=]{1,2}.*$"))
                 {
                     result.Add(new ConditionLine(line, GetLinesFromCetchData(ref cetchData)));
@@ -76,7 +83,7 @@ namespace CetchUp
                 {
                     result.Add(new EquationLine(line));
                     continue;
-                }
+                }                
             }
             return result;
         }
@@ -152,6 +159,7 @@ namespace CetchUp
         public object Clone()
         {
             CetchModifier clone = new CetchModifier();
+            clone.Name = Name;
             foreach (ICetchLine line in Lines)
             {
                 clone.Lines.Add((ICetchLine)line.Clone());

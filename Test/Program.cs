@@ -19,12 +19,17 @@ namespace Test
             Console.WriteLine(cetchUpObject.GetCetchValue("hitPoints").Max);
             cetchUpObject.ApplyModifier(repository["MinMaxB"]);
             Console.WriteLine(cetchUpObject.GetValue("oink"));
-            cetchUpObject.GetCetchValue("oink").Total-=15;
+            cetchUpObject.GetCetchValue("oink").Total -= 15;
             Console.WriteLine(cetchUpObject.GetValue("oink"));
             cetchUpObject.TryRemoveModifier(repository["MinMaxA"]);
             Console.WriteLine(cetchUpObject.GetValue("oink"));
-            cetchUpObject.GetCetchValue("oink").Total+=20;
+            cetchUpObject.GetCetchValue("oink").Total += 20;
             Console.WriteLine(cetchUpObject.GetValue("oink"));
+            foreach (ValueModEntry entry in cetchUpObject.GetCetchValue("oink").GetAllValueModEntries())
+            {
+                Console.WriteLine($"{entry.ModName} : {entry.EquationString}");
+            }
+
         }
 
     }
