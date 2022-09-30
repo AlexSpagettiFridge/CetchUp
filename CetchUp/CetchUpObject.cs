@@ -69,7 +69,7 @@ namespace CetchUp
             if (localValueChanged != null)
             {
                 localValueChanged.Invoke(this, new LocalValueChangedEventArgs((CetchModifierEntry)sender,
-                args.changedValue, args.newValue));
+                args.ChangedValue, args.NewValue));
             }
         }
 

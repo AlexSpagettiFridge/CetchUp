@@ -42,6 +42,10 @@ namespace CetchUp
         }
 
         public float Multiplier => multiplier;
+
+        /// <summary>
+        /// Invokes this whenever this objects value has changes
+        /// </summary>
         public event EventHandler<ChangedEventArgs> Changed;
 
         public float BaseValue
