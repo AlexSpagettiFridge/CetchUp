@@ -5,6 +5,10 @@ using CetchUp.CetchLines;
 
 namespace CetchUp
 {
+    /// <summary>
+    /// Every <see cref="CetchUp.CetchUpObject"/> can contains multiple CetchValues this represent a named Variable with
+    /// a corresponding Value.
+    /// </summary>
     public class CetchValue
     {
         private readonly CetchUpObject cetchUpObject;
@@ -13,7 +17,15 @@ namespace CetchUp
         private float value = 0, multiplier = 1, min = 0, max = 0, minMod = 1, maxMod = 1;
         private List<ValueModEntry> valueMods = new List<ValueModEntry>();
 
+        /// <summary>
+        /// The Name with which this CetchValue can be Identified with.
+        /// </summary>
         public string Name => name;
+
+        /// <summary>
+        /// The current total Value of this CetchValue.
+        /// </summary>
+        /// <value></value>
         public float Total
         {
             get => ClampValue((baseValue + value) * multiplier);
