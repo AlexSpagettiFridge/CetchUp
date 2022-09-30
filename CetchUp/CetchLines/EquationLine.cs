@@ -125,6 +125,8 @@ namespace CetchUp.CetchLines
             return $"{modifiedValue}: {equation.ToString()}";
         }
 
+        public string EquationString => equation.ToString();
+
         public void TryShorten()
         {
             equation.TryShorten();

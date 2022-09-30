@@ -6,7 +6,7 @@ namespace CetchUp
     public class ValueModEntry
     {
         public string ModName => origin.CetchModifier.Name;
-        public string EquationString => equation.ToString();
+        public string EquationString => equation.EquationString;
 
         internal EquationLine equation;
         public readonly CetchModifierEntry origin;
